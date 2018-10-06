@@ -1,7 +1,9 @@
 """Minimal Project Task Management."""
 
 from .hyperwave import (  # noqa: F401
-    Hyperwave
+    Hyperwave,
+    HyperwaveWeekLenghtGrouping,
+    HyperwavePhaseGrouper
 )
 
 from .ohlc_loader import  (  # noqa: F401

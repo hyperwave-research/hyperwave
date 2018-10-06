@@ -1,8 +1,57 @@
 import pandas as pd
 import numpy as np
 import logging
+from typing import List
 from .hyperwavepathfinder import HyperwavePathFinder
 
+
+class HyperwaveWeekLenghtGrouping:
+    def __init__(self, group_min_weeks: int, only_group_last_phase:bool = True):
+        self.group_min_weeks = group_min_weeks
+        self.only_group_last_phase = only_group_last_phase
+
+    def Group(self, df_path: pd.DataFrame, input_group:List[List[int]]) -> List[List[int]]:
+        hw_phase = input_group.copy()
+
+        for i in np.arange(len(hw_phase ), 1, -1):
+            phase = hw_phase [i-1]
+            if self._sum_group_weeks(df_path, phase) < self.group_min_weeks:
+                hw_phase.remove(phase)
+                hw_phase[i - 2].extend(phase)
+            else:
+                if self.only_group_last_phase:
+                    break
+
+        return hw_phase
+
+    @staticmethod
+    def _sum_group_weeks(df, group):
+        return df.loc[group].sum()['weeks']
+
+class HyperwavePhaseGrouper():
+    def __init__(self, phase_increase_factor: float = 2.0):
+        self.phase_increase_factor = phase_increase_factor
+
+    def get_hw_phases(self, df_path: pd.DataFrame) -> List[List[int]]:
+        df_positive_m = df_path[df_path['m_normalize'] >= 0]
+        if df_positive_m.shape[0] == 0:
+            return []
+
+        current_phase_m = df_positive_m.iloc[0].m_normalize
+        hw_phases_temp = []
+        hw_current_phase = [df_positive_m.index[0]]
+
+        for index, row in df_positive_m.drop(df_positive_m.index[0]).iterrows():  # df_positive_m.loc[2:].iterrows():
+            if row.m_normalize <= current_phase_m * self.phase_increase_factor:
+                hw_current_phase.append(index)
+            else:
+                hw_phases_temp.append(hw_current_phase)
+                hw_current_phase = [index]
+                current_phase_m = row.m_normalize
+
+        hw_phases_temp.append(hw_current_phase)
+
+        return hw_phases_temp
 
 class Hyperwave:
     def __init__(self,
@@ -166,9 +215,7 @@ class Hyperwave:
         return df.sort_values(['x1', 'x2'], ascending=[True, False]) \
             .reset_index()
 
-    @staticmethod
-    def _sum_group_weeks(df, group):
-        return df.loc[group].sum()['weeks']
+
 
     @staticmethod
     def _get_weekId_first_price_greater_than(df, min_week_id, max_price):

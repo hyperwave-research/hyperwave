@@ -1,0 +1,138 @@
+import pandas as pd
+import numpy as np
+from typing import List
+from datetime import datetime
+from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper
+import pytest
+
+
+def get_path_row(
+        x1: int = 0, x1_date: datetime = datetime(2000, 1, 1), x1_normalize: float = 0.0,
+        x2: int = 0, x2_date: datetime = datetime(2000, 1, 1), x2_normalize: float = 0.0,
+        y1: float = 0.0, y1_normalize: float = 0.0,
+        y2: float = 0.0, y2_normalize: float = 0.0,
+        m: float = 0.0, b: float = 0.0, m_normalize: float = 0.0, b_normalize: float = 0.0,
+        angle: float = 0.0, angle_normalize: float = 0.0,
+        weeks: int = 0, mean_error: float = 0.0, nb_is_lower: int = 0,
+        ratio_error_cut: float = 0.0, ratio_slope_y1_normalize: float = 0.0, ratio_slope_y2_normalize: float = 0.0):
+    return {
+        'x1': x1, 'x1_date': x1_date, 'x1_normalize': x1_normalize,
+        'x2': x2, 'x2_date': x2_date, 'x2_normalize': x2_normalize,
+        'y1': y1, 'y1_normalize': y1_normalize,
+        'y2': y2, 'y2_normalize': y2_normalize,
+        'm': m, 'b': b, 'm_normalize': m_normalize, 'b_normalize': b_normalize,
+        'angle': angle, 'angle_normalize': angle_normalize,
+        'weeks': weeks, 'mean_error': mean_error, 'nb_is_lower': nb_is_lower,
+        'ratio_error_cut': ratio_error_cut, 'ratio_slope_y1_normalize': ratio_slope_y1_normalize,
+        'ratio_slope_y2_normalize': ratio_slope_y2_normalize
+    }
+
+
+@pytest.mark.parametrize("raw_path, expected_phases, increase_factor, test_conment", [
+    ([get_path_row()], [[0]], 2.0, "one row return the row if greater than zero"),
+    ([
+         get_path_row(),
+         get_path_row()
+     ], [[0, 1]], 2.0, "Two path with m_normalize equal zero should return an array with both element"),
+    ([
+         get_path_row(m_normalize=-0.5),
+         get_path_row(m_normalize=-1.0)
+     ], [], 2.0, "Path with only negative elements should return empty array"),
+    ([
+         get_path_row(m_normalize=-0.5),
+         get_path_row(m_normalize=1.0)
+     ], [[1]], 2.0, "Path with only one positive m_normalize should retunr an array with one element"),
+    ([
+         get_path_row(m_normalize=0.5),
+         get_path_row(m_normalize=0.7)
+     ], [[0, 1]], 2.0,
+     "Path with two positive m_normalize without increase factor should return an array with both elements id"),
+    ([
+         get_path_row(m_normalize=0.5),
+         get_path_row(m_normalize=1.1)
+     ], [[0], [1]], 2.0,
+     "Path with two positive m_normalize with increase factor greated should return an array with two array"),
+    ([
+         get_path_row(m_normalize=0.5),
+         get_path_row(m_normalize=1.1),
+         get_path_row(m_normalize=1.5)
+     ], [[0], [1, 2]], 2.0, "Path m_normalize [0.5, 1.1, 1.5] should return [[0],[1, 2]]"),
+    ([
+         get_path_row(m_normalize=0.5),
+         get_path_row(m_normalize=1.1),
+         get_path_row(m_normalize=1.5)
+     ], [[0], [1, 2]], 2.0, "Path m_normalize [0.5, 1.1, 1.5] should return [[0],[1, 2]]"),
+    ([
+         get_path_row(m_normalize=0.5),
+         get_path_row(m_normalize=1.1),
+         get_path_row(m_normalize=1.5),
+         get_path_row(m_normalize=2.2),
+     ], [[0], [1, 2, 3]], 2.0, "Path m_normalize [0.5, 1.1, 1.5, 2.2] should return [[0],[1, 2, 3]]"),
+    ([
+         get_path_row(m_normalize=0.5),
+         get_path_row(m_normalize=1.1),
+         get_path_row(m_normalize=1.5),
+         get_path_row(m_normalize=2.4),
+     ], [[0], [1, 2], [3]], 2.0, "Path m_normalize [0.5, 1.1, 1.5, 2.4] should return [[0],[1, 2], [3]]"),
+    ([
+         get_path_row(m_normalize=0.5),
+         get_path_row(m_normalize=1.1),
+         get_path_row(m_normalize=1.5),
+         get_path_row(m_normalize=2.4),
+        get_path_row(m_normalize=10),
+     ], [[0], [1, 2], [3], [4]], 2.0, "Path m_normalize [0.5, 1.1, 1.5, 2.4, 10] should return [[0],[1, 2], [3], [4]"),
+])
+def test_that_grouping_return_expected_value(raw_path, expected_phases, increase_factor, test_conment):
+    df_path = pd.DataFrame(raw_path)
+
+    hw_phase_grouper = HyperwavePhaseGrouper(increase_factor)
+    phases = hw_phase_grouper.get_hw_phases(df_path)
+    assert expected_phases == phases, test_conment
+
+
+@pytest.mark.parametrize("raw_path, input_group, expected_result, group_min_week, only_group_last_phase, test_comment", [
+    ([
+         get_path_row(weeks=4)
+     ], [[0]], [[0]], 10, True, "one path with weeks lower than should return same input"),
+    ([
+        get_path_row(weeks=4),
+        get_path_row(weeks=4)
+     ], [[1]], [[1]], 10, True, "path with two input path but one group should return one group"),
+    ([
+         get_path_row(weeks=10),
+         get_path_row(weeks=4)
+     ], [[0], [1]], [[0, 1]], 10, True, "path with two input path and two groups should return one group"),
+    ([
+         get_path_row(weeks=10),
+         get_path_row(weeks=4),
+        get_path_row(weeks=3),
+     ], [[0], [1], [2]], [[0, 1, 2]], 10, True, "initial group [[0], [1], [2]] with weeks [10, 4, 3] shoud return group [[0, 1, 2]]"),
+    ([
+         get_path_row(weeks=10),
+         get_path_row(weeks=4),
+         get_path_row(weeks=3),
+            get_path_row(weeks=4),
+     ], [[0], [1], [2, 3]], [[0], [1, 2, 3]], 10, True,
+     "initial group [[0], [1], [2, 3]] with weeks [10, 4, 3, 4] shoud return group [[0], [1, 2, 3]]"),
+    ([
+         get_path_row(weeks=10),
+         get_path_row(weeks=4),
+         get_path_row(weeks=7),
+         get_path_row(weeks=4),
+     ], [[0], [1], [2], [3]], [[0, 1], [2, 3]], 10, False,
+     "initial group [[0], [1], [2, 3]] with weeks [10, 4, 3, 4] shoud return group [[0], [1, 2, 3]]"),
+    ([
+         get_path_row(weeks=10),
+         get_path_row(weeks=4),
+         get_path_row(weeks=7),
+         get_path_row(weeks=4),
+     ], [[0], [1], [2], [3]], [[0], [1], [2, 3]], 10, True,
+     "initial group [[0], [1], [2, 3]] with weeks [10, 4, 3, 4] shoud return group [[0], [1, 2, 3]]"),
+    ])
+def test_grouping_second_step_week_base_when_all_weeks_are_enough_long(raw_path, input_group, expected_result, group_min_week, only_group_last_phase, test_comment):
+    df_path = pd.DataFrame(raw_path)
+    hw_week_lenght_grouping = HyperwaveWeekLenghtGrouping(group_min_week, only_group_last_phase)
+    result_group = hw_week_lenght_grouping.Group(df_path, input_group)
+
+    assert expected_result == result_group
+
