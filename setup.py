@@ -15,7 +15,7 @@ setup(
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
 
-    install_requires=['numpy', 'pandas', 'pytest-runner', 'attrs', 'pytest'],
+    install_requires=['numpy', 'pandas', 'pytest-runner', 'attrs', 'pytest', 'scipy'],
 
     # entry_points={
     #     'console_scripts': [
