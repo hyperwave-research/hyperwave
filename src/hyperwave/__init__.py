@@ -3,7 +3,9 @@
 from .hyperwave import (  # noqa: F401
     Hyperwave,
     HyperwaveWeekLenghtGrouping,
-    HyperwavePhaseGrouper
+    HyperwavePhaseGrouper,
+    HyperwaveGrouping,
+    HyperwaveGroupingPhasePercent
 )
 
 from .ohlc_loader import  (  # noqa: F401

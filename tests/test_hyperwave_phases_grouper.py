@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from typing import List
 from datetime import datetime
-from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper
+from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper, HyperwaveGroupingPhasePercent
 import pytest
 
 
@@ -79,60 +79,102 @@ def get_path_row(
          get_path_row(m_normalize=1.1),
          get_path_row(m_normalize=1.5),
          get_path_row(m_normalize=2.4),
-        get_path_row(m_normalize=10),
+         get_path_row(m_normalize=10),
      ], [[0], [1, 2], [3], [4]], 2.0, "Path m_normalize [0.5, 1.1, 1.5, 2.4, 10] should return [[0],[1, 2], [3], [4]"),
 ])
 def test_that_grouping_return_expected_value(raw_path, expected_phases, increase_factor, test_conment):
     df_path = pd.DataFrame(raw_path)
 
     hw_phase_grouper = HyperwavePhaseGrouper(increase_factor)
-    phases = hw_phase_grouper.get_hw_phases(df_path)
+    phases = hw_phase_grouper.group(df_path)
     assert expected_phases == phases, test_conment
 
 
-@pytest.mark.parametrize("raw_path, input_group, expected_result, group_min_week, only_group_last_phase, test_comment", [
-    ([
-         get_path_row(weeks=4)
-     ], [[0]], [[0]], 10, True, "one path with weeks lower than should return same input"),
-    ([
-        get_path_row(weeks=4),
-        get_path_row(weeks=4)
-     ], [[1]], [[1]], 10, True, "path with two input path but one group should return one group"),
-    ([
-         get_path_row(weeks=10),
-         get_path_row(weeks=4)
-     ], [[0], [1]], [[0, 1]], 10, True, "path with two input path and two groups should return one group"),
-    ([
-         get_path_row(weeks=10),
-         get_path_row(weeks=4),
-        get_path_row(weeks=3),
-     ], [[0], [1], [2]], [[0, 1, 2]], 10, True, "initial group [[0], [1], [2]] with weeks [10, 4, 3] shoud return group [[0, 1, 2]]"),
-    ([
-         get_path_row(weeks=10),
-         get_path_row(weeks=4),
-         get_path_row(weeks=3),
-            get_path_row(weeks=4),
-     ], [[0], [1], [2, 3]], [[0], [1, 2, 3]], 10, True,
-     "initial group [[0], [1], [2, 3]] with weeks [10, 4, 3, 4] shoud return group [[0], [1, 2, 3]]"),
-    ([
-         get_path_row(weeks=10),
-         get_path_row(weeks=4),
-         get_path_row(weeks=7),
-         get_path_row(weeks=4),
-     ], [[0], [1], [2], [3]], [[0, 1], [2, 3]], 10, False,
-     "initial group [[0], [1], [2, 3]] with weeks [10, 4, 3, 4] shoud return group [[0], [1, 2, 3]]"),
-    ([
-         get_path_row(weeks=10),
-         get_path_row(weeks=4),
-         get_path_row(weeks=7),
-         get_path_row(weeks=4),
-     ], [[0], [1], [2], [3]], [[0], [1], [2, 3]], 10, True,
-     "initial group [[0], [1], [2, 3]] with weeks [10, 4, 3, 4] shoud return group [[0], [1, 2, 3]]"),
-    ])
-def test_grouping_second_step_week_base_when_all_weeks_are_enough_long(raw_path, input_group, expected_result, group_min_week, only_group_last_phase, test_comment):
+@pytest.mark.parametrize("raw_path, input_group, expected_result, group_min_week, only_group_last_phase, test_comment",
+                         [
+                             ([
+                                  get_path_row(weeks=4)
+                              ], [[0]], [[0]], 10, True, "one path with weeks lower than should return same input"),
+                             ([
+                                  get_path_row(weeks=4),
+                                  get_path_row(weeks=4)
+                              ], [[1]], [[1]], 10, True,
+                              "path with two input path but one group should return one group"),
+                             ([
+                                  get_path_row(weeks=10),
+                                  get_path_row(weeks=4)
+                              ], [[0], [1]], [[0, 1]], 10, True,
+                              "path with two input path and two groups should return one group"),
+                             ([
+                                  get_path_row(weeks=10),
+                                  get_path_row(weeks=4),
+                                  get_path_row(weeks=3),
+                              ], [[0], [1], [2]], [[0, 1, 2]], 10, True,
+                              "initial group [[0], [1], [2]] with weeks [10, 4, 3] shoud return group [[0, 1, 2]]"),
+                             ([
+                                  get_path_row(weeks=10),
+                                  get_path_row(weeks=4),
+                                  get_path_row(weeks=3),
+                                  get_path_row(weeks=4),
+                              ], [[0], [1], [2, 3]], [[0], [1, 2, 3]], 10, True,
+                              "initial group [[0], [1], [2, 3]] with weeks [10, 4, 3, 4] shoud return group [[0], [1, 2, 3]]"),
+                             ([
+                                  get_path_row(weeks=10),
+                                  get_path_row(weeks=4),
+                                  get_path_row(weeks=7),
+                                  get_path_row(weeks=4),
+                              ], [[0], [1], [2], [3]], [[0, 1], [2, 3]], 10, False,
+                              "initial group [[0], [1], [2, 3]] with weeks [10, 4, 3, 4] shoud return group [[0], [1, 2, 3]]"),
+                             ([
+                                  get_path_row(weeks=10),
+                                  get_path_row(weeks=4),
+                                  get_path_row(weeks=7),
+                                  get_path_row(weeks=4),
+                              ], [[0], [1], [2], [3]], [[0], [1], [2, 3]], 10, True,
+                              "initial group [[0], [1], [2, 3]] with weeks [10, 4, 3, 4] shoud return group [[0], [1, 2, 3]]"),
+                         ])
+def test_grouping_second_step_week_base_when_all_weeks_are_enough_long(raw_path, input_group, expected_result,
+                                                                       group_min_week, only_group_last_phase,
+                                                                       test_comment):
     df_path = pd.DataFrame(raw_path)
     hw_week_lenght_grouping = HyperwaveWeekLenghtGrouping(group_min_week, only_group_last_phase)
-    result_group = hw_week_lenght_grouping.Group(df_path, input_group)
+    result_group = hw_week_lenght_grouping.group(df_path, input_group)
 
     assert expected_result == result_group
 
+
+@pytest.mark.parametrize("raw_data, expected_result, percent_increase, test_conment", [
+    ([], [], 0.7, "Test empty array"),
+    ([
+         get_path_row(m_normalize=2.4),
+     ], [[0]], 0.7, "Test array with only one element"),
+    ([
+         get_path_row(m_normalize=1),
+         get_path_row(m_normalize=1.5)
+     ], [[0, 1]], 0.7, "Two elements in the same range"),
+    ([
+         get_path_row(m_normalize=1),
+         get_path_row(m_normalize=2.5)
+     ], [[0], [1]], 0.7, "Test array with two elements in different phase"),
+    ([
+         get_path_row(m_normalize=1),
+         get_path_row(m_normalize=1.5),
+         get_path_row(m_normalize=1.6),
+         get_path_row(m_normalize=1.9),
+     ], [[0, 1, 2], [3]], 0.7, "Test array with 4 elements that increase into different phase"),
+    ([
+         get_path_row(m_normalize=0.353723),
+         get_path_row(m_normalize=0.476578),
+         get_path_row(m_normalize=1.276563),
+         get_path_row(m_normalize=1.601295),
+         get_path_row(m_normalize=7.864277),
+         get_path_row(m_normalize=11.429688),
+         get_path_row(m_normalize=11.589543),
+         get_path_row(m_normalize=80.007812),
+     ], [[0, 1], [2, 3], [4, 5, 6], [7]], 0.7, "Test array with two elements in different phase"),
+])
+def test_grouping_phase_percent_increase_no_increase(raw_data, expected_result, percent_increase, test_conment):
+    dF_path = pd.DataFrame(raw_data)
+    hw_grouping_phase_percent = HyperwaveGroupingPhasePercent(percent_increase=percent_increase)
+    result_group = hw_grouping_phase_percent.group(df_path=dF_path)
+    assert expected_result == result_group, test_conment
