@@ -1,9 +1,10 @@
-import pandas as pd
-import numpy as np
-from typing import List
 from datetime import datetime
-from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper, HyperwaveGroupingPhasePercent
+from typing import List
+
+import pandas as pd
 import pytest
+from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper, HyperwaveGroupingPhasePercent, \
+    HyperwaveGrouping
 
 
 def get_path_row(
@@ -143,7 +144,7 @@ def test_grouping_second_step_week_base_when_all_weeks_are_enough_long(raw_path,
     assert expected_result == result_group
 
 
-@pytest.mark.parametrize("raw_data, expected_result, percent_increase, test_conment", [
+@pytest.mark.parametrize("raw_data, expected_result, percent_increase, test_comment", [
     ([], [], 0.7, "Test empty array"),
     ([
          get_path_row(m_normalize=2.4),
@@ -173,8 +174,55 @@ def test_grouping_second_step_week_base_when_all_weeks_are_enough_long(raw_path,
          get_path_row(m_normalize=80.007812),
      ], [[0, 1], [2, 3], [4, 5, 6], [7]], 0.7, "Test array with two elements in different phase"),
 ])
-def test_grouping_phase_percent_increase_no_increase(raw_data, expected_result, percent_increase, test_conment):
+def test_grouping_phase_percent_increase_no_increase(raw_data, expected_result, percent_increase, test_comment):
     dF_path = pd.DataFrame(raw_data)
     hw_grouping_phase_percent = HyperwaveGroupingPhasePercent(percent_increase=percent_increase)
     result_group = hw_grouping_phase_percent.group(df_path=dF_path)
-    assert expected_result == result_group, test_conment
+    assert expected_result == result_group, test_comment
+
+
+
+@pytest.mark.parametrize("raw_data, expected_result, group_aggregators, test_comment ", [
+    ([], [], [], "Test with everything empty"),
+    ([
+         get_path_row(m_normalize=1)
+     ], [[0]], [HyperwaveGroupingPhasePercent()], "Test one grouping with one row"),
+    ([
+         get_path_row(m_normalize=1, weeks=15)
+     ], [[0]], [HyperwaveGroupingPhasePercent(), HyperwaveWeekLenghtGrouping], "Test grouping with"),
+
+])
+def test_grouping_phase_aggregator(raw_data, expected_result, group_aggregators, test_comment):
+    df_path = pd.DataFrame(raw_data)
+    hw_grouping_phase_aggregator = HyperwaveGroupingPhaseAggregator(group_aggregators)
+    result_group = hw_grouping_phase_aggregator.group(df_path, [])
+
+    assert expected_result == result_group, test_comment
+
+#
+# def test_grouping_phase_aggregator_empty_array():
+#     raw_data = []
+#     expected_result = []
+#     df_path = pd.DataFrame(raw_data)
+#     group_aggregators = [
+#         HyperwaveGroupingPhasePercent(),
+#         HyperwaveWeekLenghtGrouping(group_min_weeks=14)
+#     ]
+#     hw_grouping_phase_aggregator = HyperwaveGroupingPhaseAggregator(group_aggregators)
+#     result_group = hw_grouping_phase_aggregator.group(df_path, [])
+#
+#     assert expected_result == result_group
+#
+#
+# def test_grouping_phase_aggregator_empty_array():
+#     raw_data = [get_path_row(m_normalize=1, weeks=1), ]
+#     expected_result = [[0]]
+#     df_path = pd.DataFrame(raw_data)
+#     group_aggregators = [
+#         HyperwaveGroupingPhasePercent(),
+#         HyperwaveWeekLenghtGrouping(group_min_weeks=14)
+#     ]
+#     hw_grouping_phase_aggregator = HyperwaveGroupingPhaseAggregator(group_aggregators)
+#     result_group = hw_grouping_phase_aggregator.group(df_path, [])
+#
+#     assert expected_result == result_group
