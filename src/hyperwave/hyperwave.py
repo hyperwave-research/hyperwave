@@ -3,7 +3,7 @@ import logging
 from typing import List
 
 from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper
-
+from .hyperwave_grouping import *
 from .hyperwavepathfinder import HyperwavePathFinder
 
 
@@ -52,19 +52,25 @@ class Hyperwave:
         first_phase_id = min(len(hw_phases_first_round), 3) * -1
         phase_2 = hw_phases_first_round[first_phase_id]
         min_week = self._get_phase_start_week(df_hull, phase_2)
-        max_price_weeks_before_start_week = self._get_max_price_week_before(df_source, min_week, self.phase2_weeks_find_max)
-
-        hw_start_week_id = self._get_weekId_first_price_greater_than(df_min_to_max,
-                                                                     min_week,
-                                                                     max_price_weeks_before_start_week)
 
         # Step 3 - Get new Hull for the borned hyperwave raw data
-        df_hyperwave_raw_data = df_min_to_max.loc[hw_start_week_id:]
+        while True:
+            max_price_weeks_before_start_week = self._get_max_price_week_before(df_source, min_week,
+                                                                                self.phase2_weeks_find_max)
 
-        df_hull_hyperwave = self._order_and_reset_index(
-            self._delete_above_path(self.hw_path_finder.get_hyperwave_path(df_hyperwave_raw_data)))
+            hw_start_week_id = self._get_weekId_first_price_greater_than(df_min_to_max,
+                                                                         min_week,
+                                                                         max_price_weeks_before_start_week)
 
-        hw_phases_temp = self._group_hyperwave_phase(df_hull_hyperwave)
+            df_hyperwave_raw_data = df_min_to_max.loc[hw_start_week_id:]
+
+            df_hull_hyperwave = self._order_and_reset_index(
+                self._delete_above_path(self.hw_path_finder.get_hyperwave_path(df_hyperwave_raw_data)))
+
+            hw_phases_temp = self._group_hyperwave_phase(df_hull_hyperwave)
+            min_week = df_hull_hyperwave.loc[0]["x1"]
+            if df_hull_hyperwave.loc[0]["m_normalize"] >= 0 :
+                break
 
         max_nb_phases = min(len(hw_phases_temp), 3) * -1
         hw_phases_temp = hw_phases_temp[max_nb_phases:]
