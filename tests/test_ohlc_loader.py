@@ -5,10 +5,9 @@ from datetime import datetime
 from os import path
 
 import pandas as pd
-from hyperwave import OhlcLoader, Source
+from hyperwave import OhlcLoader, Source, TimeFrame
 
 base_date = datetime(1900, 1, 1)
-
 
 INVESTOPIA_SAMPLE_DATA = """
     <html>
@@ -76,7 +75,7 @@ def test_that_source_available_is_equal_to_4():
 
 def test_that_cryptocompare_source_return_right_schema_dataframeHyperwave_Path_Finder():
     df = OhlcLoader.get_historical_data(
-        "BTC-USD", Source.CryptoCompare, base_date, 'weekly')
+        "BTC-USD", Source.CryptoCompare, base_date, TimeFrame.Weekly)
     assert (df.columns.sort_values() == data_source_required_columns).all()
 
 
@@ -84,13 +83,13 @@ def test_that_investopedia_source_return_right_schema_dataframe(monkeypatch):
     def mock_pandas_read_html(url_symbol, header, parse_dates):
         data = [
             {"Date": "Oct 01, 2018", "Open": 227.95, "High": 229.42,
-                "Low": 226.35, "Adj. Close": 227.26, "Volume": 23600802},
+             "Low": 226.35, "Adj. Close": 227.26, "Volume": 23600802},
         ]
         return [pd.DataFrame(data)]
 
     monkeypatch.setattr(pd, 'read_html', mock_pandas_read_html)
     df = OhlcLoader.get_historical_data(
-        "AAPL", Source.Investopedia, base_date, 'weekly')
+        "AAPL", Source.Investopedia, base_date, )
 
     assert (df.columns.sort_values() == data_source_required_columns).all()
 
@@ -102,7 +101,13 @@ def test_that_local_data_source_return_right_schema_dataframe():
 
     os.environ["HW_DATA_ROOT_FOLDER"] = sample_data_path
     df = OhlcLoader.get_historical_data(
-        "10y_usd_treasury_note", Source.LocalData, base_date, 'weekly')
+        "10y_usd_treasury_note", Source.LocalData, base_date, TimeFrame.Weekly)
 
+    assert (df.columns.sort_values() ==
+            data_source_required_columns).all()
+
+
+def test_that_we_can_load_from_stooq():
+    df = OhlcLoader.get_historical_data("BTCUSD", Source.Stooq, base_date)
     assert (df.columns.sort_values() ==
             data_source_required_columns).all()

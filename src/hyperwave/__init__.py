@@ -14,7 +14,8 @@ from .hyperwave import (  # noqa: F401
 
 from .ohlc_loader import  (  # noqa: F401
     OhlcLoader,
-    Source
+    Source,
+    TimeFrame
 )
 
 __version__ = '0.1.0'

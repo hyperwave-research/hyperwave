@@ -27,3 +27,5 @@ class InvestopediaLoader:
     def get_dataframe(self):
         raw_data = self._fetch_data()
         return self._clean_data(raw_data)
+
+
