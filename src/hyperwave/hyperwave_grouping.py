@@ -1,3 +1,4 @@
+import itertools
 from typing import List
 
 import numpy as np
@@ -106,3 +107,16 @@ class HyperwaveGroupingPhaseAggregator(HyperwaveGrouping):
             group_result = hw_group.group(df_path, group_result)
 
         return group_result
+
+
+class HyperwaveGroupingToPhase4(HyperwaveGrouping):
+
+    def group(self, df_path: pd.DataFrame, input_group: List[List[int]]) -> List[List[int]]:
+        if len(input_group) < 4:
+            return input_group
+
+        output_group = input_group[:2]
+        phase_3 = list(itertools.chain.from_iterable(input_group[2:]))
+        output_group.append(phase_3)
+
+        return output_group

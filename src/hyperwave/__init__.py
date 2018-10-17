@@ -1,12 +1,15 @@
 """Minimal Project Task Management."""
 
+
 from .hyperwave_grouping import (
     HyperwaveGrouping,
     HyperwaveWeekLenghtGrouping,
     HyperwavePhaseGrouper,
     HyperwaveGroupingPhasePercent,
-    HyperwaveGroupingPhaseAggregator
+    HyperwaveGroupingPhaseAggregator,
+    HyperwaveGroupingToPhase4
 )
+
 
 from .hyperwave import (  # noqa: F401
     Hyperwave

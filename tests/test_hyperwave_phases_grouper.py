@@ -1,10 +1,9 @@
 from datetime import datetime
-from typing import List
 
 import pandas as pd
 import pytest
 from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper, HyperwaveGroupingPhasePercent, \
-    HyperwaveGrouping
+    HyperwaveGroupingPhaseAggregator, HyperwaveGroupingToPhase4
 
 
 def get_path_row(
@@ -181,7 +180,6 @@ def test_grouping_phase_percent_increase_no_increase(raw_data, expected_result, 
     assert expected_result == result_group, test_comment
 
 
-
 @pytest.mark.parametrize("raw_data, expected_result, group_aggregators, test_comment ", [
     ([], [], [], "Test with everything empty"),
     ([
@@ -189,7 +187,7 @@ def test_grouping_phase_percent_increase_no_increase(raw_data, expected_result, 
      ], [[0]], [HyperwaveGroupingPhasePercent()], "Test one grouping with one row"),
     ([
          get_path_row(m_normalize=1, weeks=15)
-     ], [[0]], [HyperwaveGroupingPhasePercent(), HyperwaveWeekLenghtGrouping], "Test grouping with"),
+     ], [[0]], [HyperwaveGroupingPhasePercent(), HyperwaveWeekLenghtGrouping(10)], "Test grouping with two grouping"),
 
 ])
 def test_grouping_phase_aggregator(raw_data, expected_result, group_aggregators, test_comment):
@@ -199,30 +197,18 @@ def test_grouping_phase_aggregator(raw_data, expected_result, group_aggregators,
 
     assert expected_result == result_group, test_comment
 
-#
-# def test_grouping_phase_aggregator_empty_array():
-#     raw_data = []
-#     expected_result = []
-#     df_path = pd.DataFrame(raw_data)
-#     group_aggregators = [
-#         HyperwaveGroupingPhasePercent(),
-#         HyperwaveWeekLenghtGrouping(group_min_weeks=14)
-#     ]
-#     hw_grouping_phase_aggregator = HyperwaveGroupingPhaseAggregator(group_aggregators)
-#     result_group = hw_grouping_phase_aggregator.group(df_path, [])
-#
-#     assert expected_result == result_group
-#
-#
-# def test_grouping_phase_aggregator_empty_array():
-#     raw_data = [get_path_row(m_normalize=1, weeks=1), ]
-#     expected_result = [[0]]
-#     df_path = pd.DataFrame(raw_data)
-#     group_aggregators = [
-#         HyperwaveGroupingPhasePercent(),
-#         HyperwaveWeekLenghtGrouping(group_min_weeks=14)
-#     ]
-#     hw_grouping_phase_aggregator = HyperwaveGroupingPhaseAggregator(group_aggregators)
-#     result_group = hw_grouping_phase_aggregator.group(df_path, [])
-#
-#     assert expected_result == result_group
+
+@pytest.mark.parametrize("raw_data, input_group, expected_result, test_comment ", [
+    ([], [], [], "Test with everything empty"),
+    ([], [[0]], [[0]], "When group is one return the same group"),
+    ([], [[0], [1]], [[0], [1]], "When group is two return the same group"),
+    ([], [[0], [1], [2]], [[0], [1], [2]], "When group is tree return the same group"),
+    ([], [[0], [1], [2]], [[0], [1], [2]], "When group is tree return the same group"),
+    ([], [[0], [1], [2], [3]], [[0], [1], [2, 3]], "When group is four return aggregated result"),
+    ([], [[0], [1], [2], [3, 4], [5]], [[0], [1], [2, 3, 4, 5]], "When group is four return aggregated result"),
+])
+def test_grouping_phase_up_to_phase4(raw_data, input_group, expected_result, test_comment):
+    df_path = pd.DataFrame(raw_data)
+    hw_grouper = HyperwaveGroupingToPhase4()
+    result_group = hw_grouper.group(df_path, input_group)
+    assert expected_result == result_group, test_comment
