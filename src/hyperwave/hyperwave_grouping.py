@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 
 
-class HyperwaveGrouping( object ):
-    def group( self, df_path:pd.DataFrame, input_group:List[List[int]] = [] ) -> List[List[int]]:
+class HyperwaveGrouping(object):
+    def group(self, df_path: pd.DataFrame, input_group: List[List[int]] = []) -> List[List[int]]:
         pass
 
 
@@ -66,7 +66,7 @@ class HyperwaveGroupingPhasePercent(HyperwaveGrouping):
 
     def group(self, df_path: pd.DataFrame, input_group: List[List[int]] = []):
 
-        if df_path.shape[0] == 0:
+        if df_path.empty:
             return []
         df_positive_m = df_path[df_path['m_normalize'] >= 0]
         if df_positive_m.shape[0] == 0:
@@ -83,7 +83,7 @@ class HyperwaveGroupingPhasePercent(HyperwaveGrouping):
             sum_phase_increase += current_phase_grow
             previous_m_normalize = row.m_normalize
 
-            if sum_phase_increase < self.percent_increase:
+            if sum_phase_increase <= self.percent_increase:
                 hw_current_phase.append(index)
             else:
                 hw_phases_temp.append(hw_current_phase)
@@ -93,6 +93,20 @@ class HyperwaveGroupingPhasePercent(HyperwaveGrouping):
         hw_phases_temp.append(hw_current_phase)
 
         return hw_phases_temp
+
+
+class HyperwaveGrouperByMedianSlopeIncrease(HyperwaveGrouping):
+
+    def group(self, df_path: pd.DataFrame, input_group: List[List[int]] = []) -> List[List[int]]:
+        if df_path.empty:
+            return []
+
+        df_positive_m = df_path[df_path['m_normalize'] >= 0]
+        if df_positive_m.shape[0] == 0:
+            return []
+
+        median = df_positive_m["m_normalize"].pct_change().dropna().median()
+        return HyperwaveGroupingPhasePercent(median).group(df_path, input_group)
 
 
 class HyperwaveGroupingPhaseAggregator(HyperwaveGrouping):

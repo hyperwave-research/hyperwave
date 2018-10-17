@@ -1,9 +1,10 @@
 from datetime import datetime
+from typing import List
 
 import pandas as pd
 import pytest
 from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper, HyperwaveGroupingPhasePercent, \
-    HyperwaveGroupingPhaseAggregator, HyperwaveGroupingToPhase4
+    HyperwaveGroupingPhaseAggregator, HyperwaveGroupingToPhase4, HyperwaveGrouperByMedianSlopeIncrease
 
 
 def get_path_row(
@@ -210,5 +211,35 @@ def test_grouping_phase_aggregator(raw_data, expected_result, group_aggregators,
 def test_grouping_phase_up_to_phase4(raw_data, input_group, expected_result, test_comment):
     df_path = pd.DataFrame(raw_data)
     hw_grouper = HyperwaveGroupingToPhase4()
+    result_group = hw_grouper.group(df_path, input_group)
+    assert expected_result == result_group, test_comment
+
+
+
+
+@pytest.mark.parametrize("raw_data, input_group, expected_result, test_comment ", [
+    ([], [], [], "Test with everything empty"),
+    ([get_path_row(m_normalize=0.5), ], [], [[0]], "One item should return a one group with this item"),
+    ([
+         get_path_row(m_normalize=1),
+         get_path_row(m_normalize=2),
+     ], [], [[0, 1]], "Two elements should every time be grouped together"),
+    ([
+         get_path_row(m_normalize=4),
+         get_path_row(m_normalize=6),
+     ], [], [[0, 1]], "Two elements should every time be grouped together"),
+    ([
+         get_path_row(m_normalize=0.5),
+         get_path_row(m_normalize=1),
+         get_path_row(m_normalize=1.5),
+         get_path_row(m_normalize=2),
+         get_path_row(m_normalize=6),
+         get_path_row(m_normalize=6.5),
+         get_path_row(m_normalize=9),
+     ], [], [[0], [1], [2, 3], [4, 5], [6]], "")
+])
+def test_grouping_phase_by_median(raw_data, input_group, expected_result, test_comment):
+    df_path = pd.DataFrame(raw_data)
+    hw_grouper = HyperwaveGrouperByMedianSlopeIncrease()
     result_group = hw_grouper.group(df_path, input_group)
     assert expected_result == result_group, test_comment
