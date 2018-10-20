@@ -70,7 +70,7 @@ data_source_required_columns = [
 
 def test_that_source_available_is_equal_to_4():
     sources = OhlcLoader.get_available_sources()
-    assert len(sources) == 3
+    assert len(sources) == 4
 
 
 def test_that_cryptocompare_source_return_right_schema_dataframeHyperwave_Path_Finder():
