@@ -4,6 +4,7 @@ import datetime as dt
 
 from enum import Enum
 
+from hyperwave.helpers.advance_enum import AdvanceEnum
 
 from ._Ohlc_loaders.crypto_compare_loader import CryptoCompareLoader
 from ._Ohlc_loaders.investopedia_loader import InvestopediaLoader
@@ -27,16 +28,17 @@ def _add_weekid_and_price_is_closing_up(df, base_date):
     return df
 
 
-class Source(Enum):
+class Source(AdvanceEnum):
     CryptoCompare = 1
     Investopedia = 2
     LocalData = 3
     Stooq = 4
 
 
-class TimeFrame(Enum):
+class TimeFrame(AdvanceEnum):
     Daily = 1
     Weekly = 2
+
 
 
 # SOURCE_CRYPTOCOMPARE = "cryptocompare"

@@ -17,9 +17,9 @@ setup(
 
     install_requires=['numpy', 'pandas', 'pytest-runner', 'attrs', 'pytest', 'scipy'],
 
-    # entry_points={
-    #     'console_scripts': [
-    #         'tasks = tasks.cli:tasks_cli',
-    #     ]
-    # },
+    entry_points={
+        'console_scripts': [
+            'hw = hyperwave.main:Main',
+        ]
+    },
 )
