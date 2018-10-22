@@ -5,6 +5,7 @@ from datetime import datetime
 from os import path
 
 import pandas as pd
+import pytest
 from hyperwave import OhlcLoader, Source, TimeFrame
 
 base_date = datetime(1900, 1, 1)
@@ -111,3 +112,8 @@ def test_that_we_can_load_from_stooq():
     df = OhlcLoader.get_historical_data("BTCUSD", Source.Stooq, base_date)
     assert (df.columns.sort_values() ==
             data_source_required_columns).all()
+
+
+def test_stooq_fail_load_apple():
+    with pytest.raises(NameError):
+        df = OhlcLoader.get_historical_data("AAPL", Source.Stooq, base_date)

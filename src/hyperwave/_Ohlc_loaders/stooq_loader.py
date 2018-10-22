@@ -8,8 +8,11 @@ class StooqLoader:
 
     def _fetch_data(self):
         time_frame = 'w' if self._time_frame == 'WEEKLY' else 'd'
-        url_symbol = "https://stooq.com/q/d/l/?s=btcusd&i=w".format(self._symbol, time_frame )
+        url_symbol = "https://stooq.com/q/d/l/?s={}&i={}".format(self._symbol, time_frame )
         df_list = pd.read_csv(url_symbol, header=0, parse_dates=True)
+        if df_list.empty:
+            raise NameError("The query {} return no data for the symbol. Please check the synbol name in "
+                            "https://stooq.com/".format(url_symbol, self._symbol))
         df_price = df_list.dropna()
         return df_price
 
