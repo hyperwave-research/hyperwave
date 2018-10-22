@@ -8,8 +8,8 @@ def func_download(args):
 
 
 
-def set_command(subparsers):
-    download_parse = subparsers.add_parser("download",
+def set_command(subparsers, parents):
+    download_parse = subparsers.add_parser("download",parents=parents,
                                            description="Download the given symbol and save the data to the output path")
     download_parse.add_argument('--source', type=Source.from_string, choices=list(Source))
     download_parse.add_argument('--symbol', type=str, help="The synbol for which you want to download the data")
