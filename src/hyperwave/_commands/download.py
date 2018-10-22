@@ -1,11 +1,11 @@
-import argparse
-
-from hyperwave import Source, TimeFrame
+from hyperwave import Source, TimeFrame, OhlcLoader
 
 
 def func_download(args):
-    print("============ Call download ==============")
-    print(args)
+    data = OhlcLoader.get_historical_data(args.symbol, args.source, time_frame= args.timeframe)
+    data.to_csv(args.output, columns=['date', 'close', 'high', 'low', 'open'], index=False, header=True)
+
+
 
 
 def set_command(subparsers):

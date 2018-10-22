@@ -22,4 +22,6 @@ from .ohlc_loader import  (  # noqa: F401
     TimeFrame
 )
 
+from .main import Main
+
 __version__ = '0.1.0'
