@@ -9,7 +9,7 @@ def get_argparse():
     parser.add_argument('-v', help="Set verbose mode")
 
     parent_parser = argparse.ArgumentParser(add_help=False)
-    parent_parser.add_argument("-v", action='count', help="Set the loggin mode to verbose")
+    parent_parser.add_argument("-v", required=False, action='count', help="Set the loggin mode to verbose")
 
     subparsers = parser.add_subparsers()
 
@@ -22,7 +22,7 @@ def Main():
     parser = get_argparse()
     args = parser.parse_args()
 
-    if args.v is not None :
+    if args.v is not None:
         logging.basicConfig(level=logging.DEBUG)
 
     args.func(args)
