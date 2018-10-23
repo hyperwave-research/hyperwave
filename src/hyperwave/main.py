@@ -9,7 +9,7 @@ def get_argparse():
     parser.add_argument('-v', help="Set verbose mode")
 
     parent_parser = argparse.ArgumentParser(add_help=False)
-    parent_parser.add_argument("-v", required=False, action='count', help="Set the loggin mode to verbose")
+    parent_parser.add_argument("-v", required=False, action='count', help="Set the logging mode to verbose")
 
     subparsers = parser.add_subparsers()
 
