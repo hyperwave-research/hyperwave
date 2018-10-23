@@ -9,9 +9,8 @@ from .hyperwavepathfinder import HyperwavePathFinder
 
 class Hyperwave:
 
-
     @classmethod
-    def get_standard_hyperwave(cls, phase2_weeks_max:int = 156):
+    def get_standard_hyperwave(cls, phase2_weeks_max: int = 156):
         hw_grouping_lookup_phase1 = [
             HyperwaveGrouperByMeanSlopeIncrease(),
             HyperwaveWeekLenghtGrouping(group_min_weeks=10)
@@ -22,7 +21,7 @@ class Hyperwave:
             HyperwaveGroupingToPhase4()
         ]
 
-        return cls(hw_grouping_lookup_phase1 , hw_grouping_lookup_phase2, phase2_weeks_find_max=phase2_weeks_max)
+        return cls(hw_grouping_lookup_phase1, hw_grouping_lookup_phase2, phase2_weeks_find_max=phase2_weeks_max)
 
     def __init__(self,
                  # min_m=0.5,
@@ -97,26 +96,36 @@ class Hyperwave:
         hw_phases_temp = hw_phases_temp[max_nb_phases:]
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             logging.debug(hw_phases_temp)
+
         # print(hw_phases_temp)
-        hyperwave = {}
+        hyperwave = []
         phase_id = 1
         for phase in hw_phases_temp:
             phase_id = phase_id + 1
             df_phase = df_hull_hyperwave.loc[df_hull_hyperwave.loc[phase].loc[:, (
                                                                                      'ratio_error_cut')].idxmin()]
-            hyperwave[phase_id] = df_phase[self._get_columns_not_normalize(
+            hyperwave_phase = df_phase[self._get_columns_not_normalize(
                 df_phase)].to_dict()
-        if len(hyperwave) >= 1:
-            hyperwave[1] = self._get_phase1(
-                hyperwave[2], max_price_weeks_before_start_week)
+            hyperwave_phase['phase_id'] = phase_id
+            hyperwave.append(hyperwave_phase)
 
-        for (phase_id, phase) in hyperwave.items():
+        if len(hyperwave) >= 1:
+            hyperwave_phase1 = self._get_phase1(self.get_phase(hyperwave, 2), max_price_weeks_before_start_week)
+            hyperwave.append(hyperwave_phase1)
+
+        for phase in hyperwave:
             phase["is-broken"] = self._is_price_below_line(
                 df_source, phase['m'], phase['b'])
 
-        return df_hull_hyperwave, hw_phases_temp, hyperwave
+        df_hyperwave_phases = pd.DataFrame(hyperwave)
+        return df_hull_hyperwave, hw_phases_temp, df_hyperwave_phases
 
-    #     def df_result_row_to_dictionary(df_result):
+    @staticmethod
+    def get_phase(phases, phase_id):
+        for phase in phases:
+            if phase['phase_id'] == phase_id:
+                return phase
+        return {}
 
     @staticmethod
     def _is_price_below_line(df, m, b):
@@ -142,6 +151,7 @@ class Hyperwave:
         dic_phase1['nb_is_lower'] = 0
         dic_phase1['ratio_error_cut'] = 0
         dic_phase1['weeks'] = 0
+        dic_phase1['phase_id'] = 0
         return dic_phase1
 
     @staticmethod
@@ -149,10 +159,10 @@ class Hyperwave:
         return [c for c in df.axes[0] if "normalize" not in c]
 
     @staticmethod
-    def _group_hyperwave_phase(df_phase_result, grouping:List[HyperwaveGrouping]):
+    def _group_hyperwave_phase(df_phase_result, grouping: List[HyperwaveGrouping]):
         phase_grouping = []
         for grp in grouping:
-            phase_grouping = grp.group(df_phase_result, phase_grouping )
+            phase_grouping = grp.group(df_phase_result, phase_grouping)
 
         return phase_grouping
 
