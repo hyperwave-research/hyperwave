@@ -22,7 +22,7 @@ def Main():
     parser = get_argparse()
     args = parser.parse_args()
 
-    if args.v > 0:
+    if args.v is not None :
         logging.basicConfig(level=logging.DEBUG)
 
     args.func(args)
