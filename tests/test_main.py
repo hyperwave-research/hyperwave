@@ -5,15 +5,6 @@ import os
 from hyperwave import Main
 
 
-def test_hw_command_parser(monkeypatch):
-    arg_sample = ['main.py', 'download', '--source', 'Stooq', '--symbol', 'AAPL', '--output', '~ /spy.csv',
-                  '--timeframe',
-                  'Weekly']
-
-    monkeypatch.setattr(sys, 'argv', arg_sample)
-    Main()
-
-
 def test_hw_Download_file(monkeypatch):
     with tempfile.TemporaryDirectory() as tmpdirname:
         output_path = os.path.join(tmpdirname, "AAPL.csv")
