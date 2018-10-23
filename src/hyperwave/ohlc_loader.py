@@ -40,16 +40,8 @@ class TimeFrame(AdvanceEnum):
     Weekly = 2
 
 
-
-# SOURCE_CRYPTOCOMPARE = "cryptocompare"
-# SOURCE_INVESTOPEDIA = "investopedia"
-# SOURCE_LOCALDATA = "localdata"
-# SOURCE_QUANDL = "quandl"
-
-
 _sources_map = {
     Source.Investopedia: InvestopediaLoader,
-    # SOURCE_QUANDL: Quandl_Loader,
     Source.CryptoCompare: CryptoCompareLoader,
     Source.LocalData: LocalDataLoader,
     Source.Stooq: StooqLoader
