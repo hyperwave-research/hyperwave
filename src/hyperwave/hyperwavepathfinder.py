@@ -67,7 +67,7 @@ class HyperwavePathFinder:
             lambda row: HyperwavePathFinder.calculate_mean_error(row, df_input), axis=1)
         df['nb_is_lower'] = df.apply(
             lambda row: HyperwavePathFinder.nb_cut_price_low(row, df_input), axis=1)
-        df['ratio_error_cut'] = df['mean_error'] / df['nb_is_lower']
+        df['ratio_error_cut'] = df['mean_error'] / (df['nb_is_lower'] * df['weeks'])
         df['ratio_slope_y1_normalize'] = df['y1_normalize'] / df['m_normalize']
         df['ratio_slope_y2_normalize'] = df['y2_normalize'] / df['m_normalize']
         return df

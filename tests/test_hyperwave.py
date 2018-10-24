@@ -37,28 +37,28 @@ def test_hyperwaves(source_name: str, comment: str):
         source_name, Source.LocalData, base_date, TimeFrame.Weekly)
 
     hw = Hyperwave.get_standard_hyperwave()
-    (df_hull_hyperwave, hw_phases_temp, hyperwave) = hw.get_hyperwave(df_source)
+    (df_hull_hyperwave, hw_phases_temp,hyperwave) = hw.get_hyperwave(df_source)
     # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
     #     print(df_hull_hyperwave)
     #     print(hw_phases_temp)
     #     print(hyperwave)
-    assert 4 == len(hyperwave), comment
+    assert 4 == hyperwave.shape[0], comment
     # assert df.shape[0] == 0
 
 
 # @pytest.mark.usefixtures("set_env_variable")
 def test_single_hyperwave():
-    source_name = "aapl_us_w"
+    source_name = "amzn_us_w"
     df_source = OhlcLoader.get_historical_data(
         source_name, Source.LocalData, base_date, TimeFrame.Weekly)
 
     hw = Hyperwave.get_standard_hyperwave()
     (df_hull_hyperwave, hw_phases_temp, hyperwave) = hw.get_hyperwave(df_source)
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.width', 150):
         print(df_hull_hyperwave)
         print(hw_phases_temp)
         print(hyperwave)
-    assert len(hyperwave) == 4
+    assert 4 == hyperwave.shape[0]
 
 
 # @pytest.mark.usefixtures("set_env_variable")
