@@ -52,7 +52,7 @@ class HyperwaveWeekLengthPhase4Grouping(HyperwaveGrouping):
 
     def group(self, df_path: pd.DataFrame, input_group: List[List[int]]) -> List[List[int]]:
         hyperwave_total_weeks = df_path["weeks"].sum()
-        phase4_min_nb_weeks = hyperwave_total_weeks * 0.1
+        phase4_min_nb_weeks = hyperwave_total_weeks * 0.05
 
         week_grouping = HyperwaveWeekLenghtGrouping(phase4_min_nb_weeks, True)
         return week_grouping.group(df_path, input_group)
