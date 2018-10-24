@@ -2,6 +2,8 @@ import argparse
 import logging
 
 from ._commands import commands
+import os
+import pandas as pd
 
 
 def get_argparse():
@@ -24,6 +26,18 @@ def Main():
 
     if args.v is not None:
         logging.basicConfig(level=logging.DEBUG)
+
+    # Set pandas display for pretty print
+    columns = 80
+    rows = 50
+    try:
+        columns, rows = os.get_terminal_size()
+    except:
+        pass
+    pd.set_option('display.max_rows', 1000)
+    pd.set_option('display.max_columns', 999)
+    pd.set_option('display.width', columns)
+    pd.set_option('display.precision', 2)
 
     args.func(args)
 
