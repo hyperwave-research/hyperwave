@@ -48,7 +48,7 @@ def test_hyperwaves(source_name: str, comment: str):
 
 # @pytest.mark.usefixtures("set_env_variable")
 def test_single_hyperwave():
-    source_name = "amzn_us_w"
+    source_name = "DowJones_1920_1933"
     df_source = OhlcLoader.get_historical_data(
         source_name, Source.LocalData, base_date, TimeFrame.Weekly)
 
