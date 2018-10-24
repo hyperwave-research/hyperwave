@@ -35,7 +35,7 @@ class HyperwaveWeekLenghtGrouping(HyperwaveGrouping):
         return df.loc[group].sum()['weeks']
 
 
-class HyperwavePhase1Grouping(HyperwaveGrouping):
+class HyperwaveWeekLengthPhase1Grouping(HyperwaveGrouping):
 
     def group(self, df_path: pd.DataFrame, input_group: List[List[int]]) -> List[List[int]]:
         hyperwave_total_weeks = df_path["weeks"].sum()
@@ -47,9 +47,15 @@ class HyperwavePhase1Grouping(HyperwaveGrouping):
         result_grouping = list(reversed(result_grouping))
         return result_grouping
 
-    @staticmethod
-    def _sum_group_weeks(df, group):
-        return df.loc[group].sum()['weeks']
+
+class HyperwaveWeekLengthPhase4Grouping(HyperwaveGrouping):
+
+    def group(self, df_path: pd.DataFrame, input_group: List[List[int]]) -> List[List[int]]:
+        hyperwave_total_weeks = df_path["weeks"].sum()
+        phase4_min_nb_weeks = hyperwave_total_weeks * 0.1
+
+        week_grouping = HyperwaveWeekLenghtGrouping(phase4_min_nb_weeks, True)
+        return week_grouping.group(df_path, input_group)
 
 
 class HyperwavePhaseGrouper(HyperwaveGrouping):
@@ -90,23 +96,19 @@ class HyperwaveGroupingPhasePercent(HyperwaveGrouping):
         if df_positive_m.shape[0] == 0:
             return []
 
-        # current_phase_m = df_positive_m.iloc[0].m_normalize
         hw_phases_temp = []
-        # sum_phase_increase = 0
         previous_m_normalize = df_positive_m.iloc[0].m_normalize
         hw_current_phase = [df_positive_m.index[0]]
 
         for index, row in df_positive_m.drop(df_positive_m.index[0]).iterrows():
             current_phase_grow = (row.m_normalize - previous_m_normalize) / previous_m_normalize
-            # sum_phase_increase += current_phase_grow
-            previous_m_normalize = row.m_normalize
 
             if current_phase_grow <= self.percent_increase:
                 hw_current_phase.append(index)
             else:
                 hw_phases_temp.append(hw_current_phase)
                 hw_current_phase = [index]
-                # sum_phase_increase = 0
+                previous_m_normalize = row.m_normalize
 
         hw_phases_temp.append(hw_current_phase)
 
