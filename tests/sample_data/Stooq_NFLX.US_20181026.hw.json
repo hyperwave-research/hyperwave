@@ -1,0 +1,220 @@
+{
+  "schema": {
+    "fields": [
+      {
+        "name": "index",
+        "type": "integer"
+      },
+      {
+        "name": "angle",
+        "type": "number"
+      },
+      {
+        "name": "angle_normalize",
+        "type": "number"
+      },
+      {
+        "name": "b",
+        "type": "number"
+      },
+      {
+        "name": "b_normalize",
+        "type": "number"
+      },
+      {
+        "name": "is-broken",
+        "type": "boolean"
+      },
+      {
+        "name": "m",
+        "type": "number"
+      },
+      {
+        "name": "m_normalize",
+        "type": "number"
+      },
+      {
+        "name": "mean_error",
+        "type": "number"
+      },
+      {
+        "name": "nb_is_lower",
+        "type": "integer"
+      },
+      {
+        "name": "phase_id",
+        "type": "integer"
+      },
+      {
+        "name": "ratio_error_cut",
+        "type": "number"
+      },
+      {
+        "name": "ratio_slope_y1_normalize",
+        "type": "number"
+      },
+      {
+        "name": "ratio_slope_y2_normalize",
+        "type": "number"
+      },
+      {
+        "name": "weeks",
+        "type": "integer"
+      },
+      {
+        "name": "x1",
+        "type": "integer"
+      },
+      {
+        "name": "x1_date",
+        "type": "datetime"
+      },
+      {
+        "name": "x1_normalize",
+        "type": "number"
+      },
+      {
+        "name": "x2",
+        "type": "integer"
+      },
+      {
+        "name": "x2_date",
+        "type": "datetime"
+      },
+      {
+        "name": "x2_normalize",
+        "type": "number"
+      },
+      {
+        "name": "y1",
+        "type": "number"
+      },
+      {
+        "name": "y1_normalize",
+        "type": "number"
+      },
+      {
+        "name": "y2",
+        "type": "number"
+      },
+      {
+        "name": "y2_normalize",
+        "type": "number"
+      }
+    ],
+    "primaryKey": [
+      "index"
+    ],
+    "pandas_version": "0.20.0"
+  },
+  "data": [
+    {
+      "index": 0,
+      "angle": 0.0,
+      "angle_normalize": 0.5123957663,
+      "b": 81.65,
+      "b_normalize": 0.0,
+      "is-broken": false,
+      "m": 0.0,
+      "m_normalize": 0.0089432316,
+      "mean_error": 0.0,
+      "nb_is_lower": 0,
+      "phase_id": 1,
+      "ratio_error_cut": 0.0,
+      "ratio_slope_y1_normalize": 0.0,
+      "ratio_slope_y2_normalize": 0.2392638037,
+      "weeks": 0,
+      "x1": 11809,
+      "x1_date": "2015-05-04T00:00:00.000Z",
+      "x1_normalize": 0.0,
+      "x2": 11848,
+      "x2_date": "2016-02-01T00:00:00.000Z",
+      "x2_normalize": 0.2392638037,
+      "y1": 82.086,
+      "y1_normalize": 0.0,
+      "y2": 82.086,
+      "y2_normalize": 0.0021397916
+    },
+    {
+      "index": 1,
+      "angle": 7.3599541588,
+      "angle_normalize": 3.6615732039,
+      "b": -1447.5766666667,
+      "b_normalize": -0.0131715724,
+      "is-broken": false,
+      "m": 0.1291666667,
+      "m_normalize": 0.0639936495,
+      "mean_error": 65.8955081301,
+      "nb_is_lower": 5,
+      "phase_id": 2,
+      "ratio_error_cut": 0.5491292344,
+      "ratio_slope_y1_normalize": 0.0334375618,
+      "ratio_slope_y2_normalize": 0.1806768256,
+      "weeks": 24,
+      "x1": 11848,
+      "x1_date": "2016-02-01T00:00:00.000Z",
+      "x1_normalize": 0.2392638037,
+      "x2": 11872,
+      "x2_date": "2016-07-18T00:00:00.000Z",
+      "x2_normalize": 0.3865030675,
+      "y1": 82.79,
+      "y1_normalize": 0.0021397916,
+      "y2": 85.89,
+      "y2_normalize": 0.0115621695
+    },
+    {
+      "index": 2,
+      "angle": 52.9143762357,
+      "angle_normalize": 33.2417900634,
+      "b": -15621.7536585366,
+      "b_normalize": -0.2474034714,
+      "is-broken": false,
+      "m": 1.3229268293,
+      "m_normalize": 0.6554238647,
+      "mean_error": 45.6672865854,
+      "nb_is_lower": 10,
+      "phase_id": 3,
+      "ratio_error_cut": 0.1113836258,
+      "ratio_slope_y1_normalize": 0.0642468375,
+      "ratio_slope_y2_normalize": 0.3157805798,
+      "weeks": 41,
+      "x1": 11881,
+      "x1_date": "2016-09-19T00:00:00.000Z",
+      "x1_normalize": 0.4417177914,
+      "x2": 11922,
+      "x2_date": "2017-07-03T00:00:00.000Z",
+      "x2_normalize": 0.6932515337,
+      "y1": 95.94,
+      "y1_normalize": 0.0421089105,
+      "y2": 150.18,
+      "y2_normalize": 0.206970128
+    },
+    {
+      "index": 3,
+      "angle": 81.39847274,
+      "angle_normalize": 73.0218469933,
+      "b": -78789.657,
+      "b_normalize": -2.4390098601,
+      "is-broken": true,
+      "m": 6.611,
+      "m_normalize": 3.2753188411,
+      "mean_error": 335.7365914634,
+      "nb_is_lower": 10,
+      "phase_id": 4,
+      "ratio_error_cut": 1.6786829573,
+      "ratio_slope_y1_normalize": 0.1019624292,
+      "ratio_slope_y2_normalize": 0.2246618157,
+      "weeks": 20,
+      "x1": 11947,
+      "x1_date": "2017-12-25T00:00:00.000Z",
+      "x1_normalize": 0.8466257669,
+      "x2": 11967,
+      "x2_date": "2018-05-14T00:00:00.000Z",
+      "x2_normalize": 0.9693251534,
+      "y1": 191.96,
+      "y1_normalize": 0.3339594655,
+      "y2": 324.18,
+      "y2_normalize": 0.7358390779
+    }
+  ]
+}
