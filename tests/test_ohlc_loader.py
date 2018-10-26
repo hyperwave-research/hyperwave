@@ -102,7 +102,7 @@ def test_that_local_data_source_return_right_schema_dataframe():
 
     os.environ["HW_DATA_ROOT_FOLDER"] = sample_data_path
     df = OhlcLoader.get_historical_data(
-        "aapl_us_w", Source.LocalData, base_date, TimeFrame.Weekly)
+        "Stooq_AAPL.US_20181026", Source.LocalData, base_date, TimeFrame.Weekly)
 
     assert (df.columns.sort_values() ==
             data_source_required_columns).all()
