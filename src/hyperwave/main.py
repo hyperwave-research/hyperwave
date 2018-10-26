@@ -1,10 +1,15 @@
 import argparse
 import logging
 
+from pandas.core.common import SettingWithCopyWarning
+
 from ._commands import commands
 import os
 import pandas as pd
 
+import warnings
+
+warnings.simplefilter(action='ignore', category=SettingWithCopyWarning)
 
 def get_argparse():
     parser = argparse.ArgumentParser()
@@ -21,6 +26,7 @@ def get_argparse():
 
 
 def Main():
+
     parser = get_argparse()
     args = parser.parse_args()
 

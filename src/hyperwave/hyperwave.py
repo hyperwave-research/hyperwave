@@ -138,7 +138,7 @@ class Hyperwave:
     @staticmethod
     def _is_price_below_line(df, m, b):
         df['phase_line_week_price'] = df["weekId"] * m + b
-        df['is_price_below'] = df["close"] <= df["phase_line_week_price"]
+        df['is_price_below'] = df.loc[:, 'close'] <= df.loc[:, "phase_line_week_price"]
         return df.any()['is_price_below']
 
     #     return df.any(axis='is_price_below')

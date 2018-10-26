@@ -59,17 +59,17 @@ class HyperwavePathFinder:
                                                                  x1_col_name='x1_normalize',
                                                                  y1_col_name='y1_normalize',
                                                                  m_col_name='m_normalize')
-        df['angle'] = np.rad2deg(np.arctan2(df['m'], 1))
+        df['angle'] = np.rad2deg(np.arctan2(df.loc[:, 'm'], 1))
         df['angle_normalize'] = np.rad2deg(
-            np.arctan2(df['m_normalize'], 1))
-        df['weeks'] = np.abs(df['x1'] - df['x2'])
+            np.arctan2(df.loc[:, 'm_normalize'], 1))
+        df['weeks'] = np.abs(df.loc[:, 'x1'] - df.loc[:, 'x2'])
         df['mean_error'] = df.apply(
             lambda row: HyperwavePathFinder.calculate_mean_error(row, df_input), axis=1)
         df['nb_is_lower'] = df.apply(
             lambda row: HyperwavePathFinder.nb_cut_price_low(row, df_input), axis=1)
-        df['ratio_error_cut'] = df['mean_error'] / (df['nb_is_lower'] * df['weeks'])
-        df['ratio_slope_y1_normalize'] = df['y1_normalize'] / df['m_normalize']
-        df['ratio_slope_y2_normalize'] = df['y2_normalize'] / df['m_normalize']
+        df['ratio_error_cut'] = df.loc[:, 'mean_error'] / (df.loc[:, 'nb_is_lower'] * df.loc[:, 'weeks'])
+        df['ratio_slope_y1_normalize'] = df.loc[:, 'y1_normalize'] / df.loc[:, 'm_normalize']
+        df['ratio_slope_y2_normalize'] = df.loc[:, 'y2_normalize'] / df.loc[:, 'm_normalize']
         return df
 
     @staticmethod
