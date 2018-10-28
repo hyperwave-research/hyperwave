@@ -35,6 +35,44 @@ class HyperwaveWeekLenghtGrouping(HyperwaveGrouping):
         return df.loc[group].sum()['weeks']
 
 
+class HyperwaveGrouperSmallWeek(HyperwaveGrouping):
+    def __init__(self, percent_bigger: int = 0.5):
+        self._percent_bigger = percent_bigger
+
+    def group(self, df_path: pd.DataFrame, input_group: List[List[int]] = []) -> List[List[int]]:
+        if len(input_group) < 4:
+            return input_group
+
+        hw_phase = input_group.copy()
+
+        for i in np.arange(len(hw_phase), 1, -1):
+            phase_previous = hw_phase[i - 3]
+            phase_current = hw_phase[i - 2]
+            phase_next = hw_phase[i - 1 ]
+
+            week_previous = self._sum_group_weeks(df_path, phase_previous)
+            week_current = self._sum_group_weeks(df_path, phase_current)
+            week_next = self._sum_group_weeks(df_path, phase_next)
+
+            week_current_grow = week_current * ( 1 + self._percent_bigger)
+
+            if week_current_grow < week_previous and week_current_grow < week_next:
+                if week_previous < week_next:
+                    hw_phase.remove(phase_current)
+                    hw_phase[i - 3].extend(phase_current)
+                elif week_previous > week_next:
+                    hw_phase.remove(phase_current)
+                    hw_phase[i - 2].extend(phase_current)
+                elif week_previous == week_next:
+                    hw_phase.remove(phase_current)
+                    hw_phase[i - 3].extend(phase_current)
+
+        return hw_phase
+
+    @staticmethod
+    def _sum_group_weeks(df, group):
+        return df.loc[group].sum()['weeks']
+
 class HyperwaveWeekLengthPhase1Grouping(HyperwaveGrouping):
 
     def group(self, df_path: pd.DataFrame, input_group: List[List[int]]) -> List[List[int]]:
@@ -52,8 +90,9 @@ class HyperwaveWeekLengthPhase4Grouping(HyperwaveGrouping):
 
     def group(self, df_path: pd.DataFrame, input_group: List[List[int]]) -> List[List[int]]:
         hyperwave_total_weeks = df_path["weeks"].sum()
-        phase4_min_nb_weeks = hyperwave_total_weeks * 0.06
-
+        phase4_min_nb_weeks = min(hyperwave_total_weeks, 12)
+        str_message = "Phase 4 min size weeks : {}".format(phase4_min_nb_weeks)
+        print(str_message)
         week_grouping = HyperwaveWeekLenghtGrouping(phase4_min_nb_weeks, True)
         return week_grouping.group(df_path, input_group)
 
@@ -101,14 +140,13 @@ class HyperwaveGroupingPhasePercent(HyperwaveGrouping):
         hw_current_phase = [df_positive_m.index[0]]
 
         for index, row in df_positive_m.drop(df_positive_m.index[0]).iterrows():
-            current_phase_grow = (row.m_normalize - previous_m_normalize) / previous_m_normalize
-
-            if current_phase_grow <= self.percent_increase:
-                hw_current_phase.append(index)
-            else:
+            if row.m_normalize >= self.percent_increase * previous_m_normalize :
                 hw_phases_temp.append(hw_current_phase)
                 hw_current_phase = [index]
-                previous_m_normalize = row.m_normalize
+            else:
+                hw_current_phase.append(index)
+
+            previous_m_normalize = row.m_normalize
 
         hw_phases_temp.append(hw_current_phase)
 
@@ -125,7 +163,7 @@ class HyperwaveGrouperByMedianSlopeIncrease(HyperwaveGrouping):
         if df_positive_m.shape[0] == 0:
             return []
 
-        median = df_positive_m["m_normalize"].pct_change().dropna().median()
+        median = df_positive_m["m_normalize"].pct_change().dropna().median() + 1
         logging.debug("median value {}".format(median))
         return HyperwaveGroupingPhasePercent(median).group(df_path, input_group)
 
@@ -148,7 +186,15 @@ class HyperwaveGrouperByMeanSlopeIncrease(HyperwaveGrouping):
 
         df_changes = df_changes[(df_changes >= low_value)]
         df_changes = df_changes[(df_changes <= up_value)]
-        mean = df_changes.mean()
+
+        std = df_changes.std()
+        mean = df_changes.mean() + std
+
+        mean += 0 if mean > 1 else 1
+
+        mean = min(mean, 2)
+
+        # mean = max(mean, 1.3)
         logging.debug("mean value {}".format(mean))
         return HyperwaveGroupingPhasePercent(mean).group(df_path, input_group)
 

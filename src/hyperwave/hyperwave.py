@@ -13,10 +13,12 @@ class Hyperwave:
     def get_standard_hyperwave(cls, phase2_weeks_max: int = 156):
         hw_grouping_lookup_phase1 = [
             HyperwaveGrouperByMeanSlopeIncrease(),
-            HyperwaveWeekLenghtGrouping(group_min_weeks=10)
+            # HyperwaveGrouperSmallWeek(0.9),
+            HyperwaveWeekLenghtGrouping(group_min_weeks=15)
         ]
         hw_grouping_lookup_phase2 = [
             HyperwaveGrouperByMeanSlopeIncrease(),
+            HyperwaveGrouperSmallWeek(0.9),
             HyperwaveWeekLengthPhase1Grouping(),
             HyperwaveWeekLengthPhase4Grouping(),
             HyperwaveGroupingToPhase4()
@@ -242,7 +244,11 @@ class Hyperwave:
 
         df_val_price_greater_than_max = df_week_greater_than[(
                 df_week_greater_than.close > max_price)]
-        return df_val_price_greater_than_max.loc[df_val_price_greater_than_max.loc[:, ('weekId')].idxmin()]['weekId']
+
+        df_weekid_above_max_price =  df_val_price_greater_than_max.loc[df_val_price_greater_than_max.loc[:, ('weekId')].idxmin()]
+
+        return df_weekid_above_max_price['weekId'] if (df_weekid_above_max_price['close'] - max_price) / max_price < 0.1 else df_weekid_above_max_price['weekId'] - 1
+
 
     @staticmethod
     def _get_phase_start_week(df_result, phase_lines):

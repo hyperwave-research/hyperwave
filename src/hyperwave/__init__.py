@@ -8,6 +8,7 @@ from .hyperwave_grouping import (
     HyperwaveGroupingPhasePercent,
     HyperwaveGroupingPhaseAggregator,
     HyperwaveGroupingToPhase4,
+    HyperwaveGrouperSmallWeek,
     HyperwaveGrouperByMedianSlopeIncrease
 )
 

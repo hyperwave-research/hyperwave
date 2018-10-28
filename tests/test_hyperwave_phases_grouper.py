@@ -4,7 +4,8 @@ from typing import List
 import pandas as pd
 import pytest
 from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper, HyperwaveGroupingPhasePercent, \
-    HyperwaveGroupingPhaseAggregator, HyperwaveGroupingToPhase4, HyperwaveGrouperByMedianSlopeIncrease
+    HyperwaveGroupingPhaseAggregator, HyperwaveGroupingToPhase4, HyperwaveGrouperByMedianSlopeIncrease, \
+    HyperwaveGrouping, HyperwaveGrouperSmallWeek
 
 
 def get_path_row(
@@ -152,17 +153,17 @@ def test_grouping_second_step_week_base_when_all_weeks_are_enough_long(raw_path,
     ([
          get_path_row(m_normalize=1),
          get_path_row(m_normalize=1.5)
-     ], [[0, 1]], 0.7, "Two elements in the same range"),
+     ], [[0, 1]], 1.7, "Two elements in the same range"),
     ([
          get_path_row(m_normalize=1),
          get_path_row(m_normalize=2.5)
-     ], [[0], [1]], 0.7, "Test array with two elements in different phase"),
+     ], [[0], [1]], 1.7, "Test array with two elements in different phase"),
     ([
          get_path_row(m_normalize=1),
          get_path_row(m_normalize=1.5),
          get_path_row(m_normalize=1.6),
-         get_path_row(m_normalize=1.9),
-     ], [[0, 1, 2], [3]], 0.7, "Test array with 4 elements that increase into different phase"),
+         get_path_row(m_normalize=3.9),
+     ], [[0, 1, 2], [3]], 1.7, "Test array with 4 elements that increase into different phase"),
     ([
          get_path_row(m_normalize=0.353723),
          get_path_row(m_normalize=0.476578),
@@ -172,7 +173,7 @@ def test_grouping_second_step_week_base_when_all_weeks_are_enough_long(raw_path,
          get_path_row(m_normalize=11.429688),
          get_path_row(m_normalize=11.589543),
          get_path_row(m_normalize=80.007812),
-     ], [[0, 1], [2, 3], [4, 5, 6], [7]], 0.7, "Test array with two elements in different phase"),
+     ], [[0, 1], [2, 3], [4, 5, 6], [7]], 1.7, "Test array with two elements in different phase"),
 ])
 def test_grouping_phase_percent_increase_no_increase(raw_data, expected_result, percent_increase, test_comment):
     dF_path = pd.DataFrame(raw_data)
@@ -215,22 +216,17 @@ def test_grouping_phase_up_to_phase4(raw_data, input_group, expected_result, tes
     assert expected_result == result_group, test_comment
 
 
-
-
-
-
-
 @pytest.mark.parametrize("raw_data, input_group, expected_result, test_comment ", [
     ([], [], [], "Test with everything empty"),
     ([get_path_row(m_normalize=0.5), ], [], [[0]], "One item should return a one group with this item"),
     ([
          get_path_row(m_normalize=1),
          get_path_row(m_normalize=2),
-     ], [], [[0, 1]], "Two elements should every time be grouped together"),
+     ], [], [[0], [1]], "Two elements should every time be grouped separately"),
     ([
          get_path_row(m_normalize=4),
          get_path_row(m_normalize=6),
-     ], [], [[0, 1]], "Two elements should every time be grouped together"),
+     ], [], [[0], [1]], "Two elements should every time be grouped together"),
     ([
          get_path_row(m_normalize=0.5),
          get_path_row(m_normalize=1),
@@ -239,7 +235,7 @@ def test_grouping_phase_up_to_phase4(raw_data, input_group, expected_result, tes
          get_path_row(m_normalize=6),
          get_path_row(m_normalize=6.5),
          get_path_row(m_normalize=9),
-     ], [], [[0], [1], [2, 3], [4, 5], [6]], ""),
+     ], [], [[0], [1], [2, 3], [4, 5, 6]], ""),
     ([
          get_path_row(m_normalize=0.011087),
          get_path_row(m_normalize=0.043478),
@@ -255,10 +251,45 @@ def test_grouping_phase_up_to_phase4(raw_data, input_group, expected_result, tes
          get_path_row(m_normalize=12.907091),
          get_path_row(m_normalize=15.286372),
          get_path_row(m_normalize=58.963515),
-     ], [], [[0], [1, 2], [3], [4, 5], [6, 7, 8], [9], [10], [11, 12], [13]], "Amazon data"),
+     ], [], [[0], [1, 2], [3], [4], [5, 6, 7, 8, 9], [10], [11, 12], [13]], "Amazon data"),
 ])
 def test_grouping_phase_by_median(raw_data, input_group, expected_result, test_comment):
     df_path = pd.DataFrame(raw_data)
     hw_grouper = HyperwaveGrouperByMedianSlopeIncrease()
+    result_group = hw_grouper.group(df_path, input_group)
+    assert expected_result == result_group, test_comment
+
+
+@pytest.mark.parametrize("raw_data, input_group, expected_result, test_comment ", [
+    ([], [], [], "Test with everything empty"),
+    ([get_path_row(weeks=10), ], [[0]], [[0]], "if input group smaller than 3 return input group"),
+    ([
+         get_path_row(weeks=10),
+         get_path_row(weeks=10),
+     ], [[0], [1]], [[0], [1]], "if input group smaller than 3 return input group"),
+    ([
+         get_path_row(weeks=10),
+         get_path_row(weeks=10),
+         get_path_row(weeks=20),
+     ], [[0], [1], [2]], [[0], [1], [2]], "if input group smaller than 3 return input group"),
+    ([
+         get_path_row(weeks=10),
+         get_path_row(weeks=20),
+         get_path_row(weeks=19),
+         get_path_row(weeks=31),
+        get_path_row(weeks=10),
+     ], [[0, 1], [2], [3], [4]], [[0, 1, 2], [3], [4]], "Should group 2 with group 1"),
+    ([
+         get_path_row(weeks=10),
+         get_path_row(weeks=23),
+         get_path_row(weeks=19),
+         get_path_row(weeks=30),
+         get_path_row(weeks=10),
+     ], [[0, 1], [2], [3], [4]], [[0, 1], [3, 2], [4]], "Should group 2 with group 1"),
+
+])
+def test_grouping_low_week_middle(raw_data, input_group, expected_result, test_comment):
+    df_path = pd.DataFrame(raw_data)
+    hw_grouper = HyperwaveGrouperSmallWeek(0.5)
     result_group = hw_grouper.group(df_path, input_group)
     assert expected_result == result_group, test_comment
