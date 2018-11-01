@@ -4,7 +4,7 @@ from typing import List
 import logging
 import numpy as np
 import pandas as pd
-
+from scipy import constants
 
 class HyperwaveGrouping(object):
     def group(self, df_path: pd.DataFrame, input_group: List[List[int]] = []) -> List[List[int]]:
@@ -75,9 +75,12 @@ class HyperwaveGrouperSmallWeek(HyperwaveGrouping):
 
 class HyperwaveWeekLengthPhase1Grouping(HyperwaveGrouping):
 
+    def __init__(self, phase_1_percent_length = 0.23):
+        self._phase_1_percent_length = phase_1_percent_length
+
     def group(self, df_path: pd.DataFrame, input_group: List[List[int]]) -> List[List[int]]:
         hyperwave_total_weeks = df_path["weeks"].sum()
-        phase1_min_nb_weeks = hyperwave_total_weeks * 0.25
+        phase1_min_nb_weeks = hyperwave_total_weeks * self._phase_1_percent_length
 
         week_grouping = HyperwaveWeekLenghtGrouping(phase1_min_nb_weeks, True)
         reversed_list = list(reversed(input_group))
@@ -88,9 +91,13 @@ class HyperwaveWeekLengthPhase1Grouping(HyperwaveGrouping):
 
 class HyperwaveWeekLengthPhase4Grouping(HyperwaveGrouping):
 
+    def __init__(self, phase_4_percent_lenght = 0.07):
+        self._phase4_percent_lenght = phase_4_percent_lenght
+
     def group(self, df_path: pd.DataFrame, input_group: List[List[int]]) -> List[List[int]]:
-        hyperwave_total_weeks = df_path["weeks"].sum()
-        phase4_min_nb_weeks = min(hyperwave_total_weeks, 12)
+        hyperwave_total_weeks = df_path["weeks"].sum() * self._phase4_percent_lenght
+        # phase4_min_nb_weeks = min(hyperwave_total_weeks, 12)
+        phase4_min_nb_weeks = hyperwave_total_weeks
         str_message = "Phase 4 min size weeks : {}".format(phase4_min_nb_weeks)
         print(str_message)
         week_grouping = HyperwaveWeekLenghtGrouping(phase4_min_nb_weeks, True)
@@ -145,8 +152,8 @@ class HyperwaveGroupingPhasePercent(HyperwaveGrouping):
                 hw_current_phase = [index]
             else:
                 hw_current_phase.append(index)
-
             previous_m_normalize = row.m_normalize
+
 
         hw_phases_temp.append(hw_current_phase)
 
@@ -190,13 +197,22 @@ class HyperwaveGrouperByMeanSlopeIncrease(HyperwaveGrouping):
         std = df_changes.std()
         mean = df_changes.mean() + std
 
-        mean += 0 if mean > 1 else 1
-
+        mean += 0 if mean > 1.2 else 1
+        # mean += 1
         mean = min(mean, 2)
 
         # mean = max(mean, 1.3)
         logging.debug("mean value {}".format(mean))
         return HyperwaveGroupingPhasePercent(mean).group(df_path, input_group)
+
+class HyperwaveGrouperGoldenIncrease(HyperwaveGrouping):
+
+    def group(self, df_path: pd.DataFrame, input_group: List[List[int]] = []) -> List[List[int]]:
+        if df_path.empty:
+            return []
+
+        increase = constants.golden
+        return HyperwaveGroupingPhasePercent(increase ).group(df_path, input_group)
 
 
 class HyperwaveGroupingPhaseAggregator(HyperwaveGrouping):

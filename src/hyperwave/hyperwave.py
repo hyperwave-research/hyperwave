@@ -12,13 +12,15 @@ class Hyperwave:
     @classmethod
     def get_standard_hyperwave(cls, phase2_weeks_max: int = 156):
         hw_grouping_lookup_phase1 = [
+            # HyperwaveGrouperGoldenIncrease(),
             HyperwaveGrouperByMeanSlopeIncrease(),
             # HyperwaveGrouperSmallWeek(0.9),
-            HyperwaveWeekLenghtGrouping(group_min_weeks=15)
+            # HyperwaveWeekLenghtGrouping(group_min_weeks=15),
+            HyperwaveWeekLengthPhase4Grouping(0.07),
         ]
         hw_grouping_lookup_phase2 = [
-            HyperwaveGrouperByMeanSlopeIncrease(),
-            HyperwaveGrouperSmallWeek(0.9),
+            HyperwaveGrouperGoldenIncrease(),
+            HyperwaveGrouperSmallWeek(0.07),
             HyperwaveWeekLengthPhase1Grouping(),
             HyperwaveWeekLengthPhase4Grouping(),
             HyperwaveGroupingToPhase4()
@@ -90,7 +92,11 @@ class Hyperwave:
                 self._delete_above_path(self.hw_path_finder.get_hyperwave_path(df_hyperwave_raw_data)))
 
             min_week = df_hull_hyperwave[(df_hull_hyperwave.m_normalize > 0)].iloc[0]["x1"]
-            if df_hull_hyperwave.loc[0]["m_normalize"] >= 0:
+            if df_hull_hyperwave.loc[0]["m_normalize"] < 0.0:
+                continue
+
+            min_week = df_hull_hyperwave[(df_hull_hyperwave.m_normalize > 0)].iloc[0]["x2"]
+            if df_hull_hyperwave.loc[0]["m_normalize"] >= 0.01:
                 break
 
         hw_phases_temp = Hyperwave._group_hyperwave_phase(df_hull_hyperwave, self.hw_grouping_lookup_phase2)
@@ -173,7 +179,10 @@ class Hyperwave:
     def _group_hyperwave_phase(df_phase_result, grouping: List[HyperwaveGrouping]):
         phase_grouping = []
         for grp in grouping:
+            logging.debug("========== Use grouper {} =================".format(grp))
+            logging.debug("Before Grouping : {}".format(phase_grouping))
             phase_grouping = grp.group(df_phase_result, phase_grouping)
+            logging.debug("After Grouping : {}".format(phase_grouping))
 
         return phase_grouping
 
