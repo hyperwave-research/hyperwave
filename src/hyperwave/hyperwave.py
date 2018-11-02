@@ -14,7 +14,7 @@ class Hyperwave:
         hw_grouping_lookup_phase1 = [
             # HyperwaveGrouperGoldenIncrease(),
             HyperwaveGrouperByMeanSlopeIncrease(),
-            # HyperwaveGrouperSmallWeek(0.9),
+            HyperwaveGrouperSmallWeek(0.07),
             # HyperwaveWeekLenghtGrouping(group_min_weeks=15),
             HyperwaveWeekLengthPhase4Grouping(0.07),
         ]
@@ -63,20 +63,21 @@ class Hyperwave:
         max_week_id = df_min_to_max.loc[df_min_to_max.loc[:, 'weekId'].idxmax(
         ), 'weekId']
         df_post_max = df_source.loc[max_week_id:]
-        df_hull = self._order_and_reset_index(
-            self._delete_above_path(self.hw_path_finder.get_hyperwave_path(df_min_to_max)))
-
-        hw_phases_first_round = Hyperwave._group_hyperwave_phase(df_hull, self.hw_grouping_lookup_phase1)
-
-        logging.debug("HW Phase search :")
-        logging.debug(df_hull)
-        logging.debug(hw_phases_first_round)
-
-        # Step 2 - Find max Price prior of start hyperwave
-        first_phase_id = min(len(hw_phases_first_round), 3) * -1
-        phase_2 = hw_phases_first_round[first_phase_id]
-        min_week = self._get_phase_start_week(df_hull, phase_2)
-
+        # df_hull = self._order_and_reset_index(
+        #     self._delete_above_path(self.hw_path_finder.get_hyperwave_path(df_min_to_max)))
+        #
+        # hw_phases_first_round = Hyperwave._group_hyperwave_phase(df_hull, self.hw_grouping_lookup_phase1)
+        #
+        # logging.debug("HW Phase search :")
+        # logging.debug(df_hull)
+        # logging.debug(hw_phases_first_round)
+        #
+        # # Step 2 - Find max Price prior of start hyperwave
+        # first_phase_id = min(len(hw_phases_first_round), 3) * -1
+        # phase_2 = hw_phases_first_round[first_phase_id]
+        # min_week = self._get_phase_start_week(df_hull, phase_2)
+        min_week = df_min_to_max.loc[df_min_to_max.loc[:, 'weekId'].idxmin(
+        ), 'weekId']
         # Step 3 - Get new Hull for the borned hyperwave raw data
         while True:
             max_price_weeks_before_start_week = self._get_max_price_week_before(df_source, min_week,
@@ -96,7 +97,7 @@ class Hyperwave:
                 continue
 
             min_week = df_hull_hyperwave[(df_hull_hyperwave.m_normalize > 0)].iloc[0]["x2"]
-            if df_hull_hyperwave.loc[0]["m_normalize"] >= 0.01:
+            if df_hull_hyperwave.loc[0]["m_normalize"] >= 0.05:
                 break
 
         hw_phases_temp = Hyperwave._group_hyperwave_phase(df_hull_hyperwave, self.hw_grouping_lookup_phase2)

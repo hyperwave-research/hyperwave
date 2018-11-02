@@ -33,7 +33,7 @@ def test_hyperwaves(source_name: str, result_file_name: str,  comment: str):
         os.mkdir(os.path.join(sample_data_folder, "results"))
     result_output_path = os.path.join(sample_data_folder, "results", result_file_name)
 
-    hyperwave.to_json(result_output_path, orient='table')
+    hyperwave.to_csv(result_output_path, header=True, index=False)
     pd.testing.assert_frame_equal(df_result, hyperwave, check_less_precise=True )
 
 
@@ -50,6 +50,27 @@ def test_single_hyperwave():
         print(hw_phases_temp)
         print(hyperwave)
     assert 4 == hyperwave.shape[0]
+
+#
+# def test_resave_result_to_csv():
+#     root_path = r'/home/dzucker/git/hyperwave/tests/sample_data'
+#     for json_file_path in get_files(root_path):
+#         print("Load file {} :".format(json_file_path))
+#         file_name, extension = os.path.splitext(json_file_path)
+#         if not extension == '.json':
+#             continue
+#
+#         df = pd.read_json(json_file_path , orient='table')
+#
+#         csv_file_path= '{}.csv'.format(file_name)
+#         df.to_csv(csv_file_path, header=True, index=False)
+#
+# def get_files(root_path):
+#     for path in os.listdir(root_path):
+#         full_path = os.path.join(root_path, path)
+#         if os.path.isdir(full_path):
+#             yield from get_files(full_path)
+#         yield full_path
 
 
 # # @pytest.mark.usefixtures("set_env_variable")
