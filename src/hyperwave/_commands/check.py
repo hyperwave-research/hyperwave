@@ -21,12 +21,12 @@ def func_check(args):
 
         file_name = "{}_{}_{:%Y%m%d}".format(args.source, args.symbol, datetime.datetime.now())
         raw_data_file_name = "{}.csv".format(file_name)
-        hull_file_name = "{}.hull.json".format(file_name)
-        hw_file_name = "{}.hw.json".format(file_name)
+        hull_file_name = "{}.hull.csv".format(file_name)
+        hw_file_name = "{}.hw.csv".format(file_name)
 
         df_raw_data.to_csv(os.path.join(output_path, raw_data_file_name), columns=['date', 'close', 'high', 'low', 'open'], index=False, header=True)
-        df_hull_hyperwave.to_json(os.path.join(output_path, hull_file_name ), orient='table')
-        hyperwave.to_json(os.path.join(output_path, hw_file_name), orient='table')
+        df_hull_hyperwave.to_csv(os.path.join(output_path, hull_file_name ), header=True, Index=False)
+        hyperwave.to_csv(os.path.join(output_path, hw_file_name), header=True, Index=False)
 
 
 def set_command(subparsers, parents):
