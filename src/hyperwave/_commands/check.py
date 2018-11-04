@@ -25,8 +25,8 @@ def func_check(args):
         hw_file_name = "{}.hw.csv".format(file_name)
 
         df_raw_data.to_csv(os.path.join(output_path, raw_data_file_name), columns=['date', 'close', 'high', 'low', 'open'], index=False, header=True)
-        df_hull_hyperwave.to_csv(os.path.join(output_path, hull_file_name ), header=True, Index=False)
-        hyperwave.to_csv(os.path.join(output_path, hw_file_name), header=True, Index=False)
+        df_hull_hyperwave.to_csv(os.path.join(output_path, hull_file_name ), header=True, index=False)
+        hyperwave.to_csv(os.path.join(output_path, hw_file_name), header=True, index=False)
 
 
 def set_command(subparsers, parents):
