@@ -43,7 +43,7 @@ def Main():
     pd.set_option('display.max_rows', 1000)
     pd.set_option('display.max_columns', 999)
     pd.set_option('display.width', columns)
-    pd.set_option('display.precision', 2)
+    pd.set_option('display.precision', 4)
 
     args.func(args)
 
