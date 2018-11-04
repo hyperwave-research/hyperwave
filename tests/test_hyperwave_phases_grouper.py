@@ -206,8 +206,8 @@ def test_grouping_phase_aggregator(raw_data, expected_result, group_aggregators,
     ([], [[0], [1]], [[0], [1]], "When group is two return the same group"),
     ([], [[0], [1], [2]], [[0], [1], [2]], "When group is tree return the same group"),
     ([], [[0], [1], [2]], [[0], [1], [2]], "When group is tree return the same group"),
-    ([], [[0], [1], [2], [3]], [[0], [1], [2, 3]], "When group is four return aggregated result"),
-    ([], [[0], [1], [2], [3, 4], [5]], [[0], [1], [2, 3, 4, 5]], "When group is four return aggregated result"),
+    ([], [[0], [1], [2], [3]], [[0], [1, 2], [3]], "When group is four return aggregated result"),
+    ([], [[0], [1], [2], [3, 4], [5]], [[0], [1, 2, 3, 4], [5]], "When group is four return aggregated result"),
 ])
 def test_grouping_phase_up_to_phase4(raw_data, input_group, expected_result, test_comment):
     df_path = pd.DataFrame(raw_data)
