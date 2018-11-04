@@ -13,8 +13,10 @@ def get_test_sample_data():
     for file in os.listdir(sample_data_folder):
         file_name = os.path.basename(file)
         file_name_raw_data, file_extension = os.path.splitext(file_name)
-        file_name_json_result = "{}.hw.json".format(file_name_raw_data)
+        file_name_json_result = "{}.hw.csv".format(file_name_raw_data)
         if file_extension != '.csv':
+            continue
+        if '.hw' in file_name or '.hull' in file_name:
             continue
         yield (file_name_raw_data, file_name_json_result ,"test file {}".format(file_name))
 
@@ -27,19 +29,21 @@ def test_hyperwaves(source_name: str, result_file_name: str,  comment: str):
     sample_data_folder = os.environ.get("HW_DATA_ROOT_FOLDER", "./sample_data")
     result_file_path = os.path.join(sample_data_folder, result_file_name)
 
-    df_result = pd.read_json(result_file_path, orient='table')
+    df_result = pd.read_csv(result_file_path, header=0, parse_dates=['x1_date', 'x2_date'], infer_datetime_format=True)
 
     if not os.path.exists(os.path.join(sample_data_folder, "results")) :
         os.mkdir(os.path.join(sample_data_folder, "results"))
     result_output_path = os.path.join(sample_data_folder, "results", result_file_name)
 
-    hyperwave.to_csv(result_output_path, header=True, index=False)
-    pd.testing.assert_frame_equal(df_result, hyperwave, check_less_precise=True )
+    hyperwave.sort_values('phase_id', ascending=True).to_csv(result_output_path , header=True, index=False)
+    df_result = df_result.sort_values('phase_id', ascending=True).reset_index()
+    hyperwave = hyperwave.sort_values('phase_id', ascending=True).reset_index()
+    pd.testing.assert_frame_equal(df_result, hyperwave , check_less_precise=True )
 
 
 # @pytest.mark.usefixtures("set_env_variable")
 def test_single_hyperwave():
-    source_name = "Stooq_GOOGL.US_20181029"
+    source_name = "Stooq_700.HK_20181026"
     df_source = OhlcLoader.get_historical_data(
         source_name, Source.LocalData, time_frame=TimeFrame.Weekly)
 

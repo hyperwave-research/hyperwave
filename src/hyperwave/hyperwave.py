@@ -51,6 +51,8 @@ class Hyperwave:
         self.phase2_weeks_find_max = phase2_weeks_find_max
         self.hw_grouping_lookup_phase1 = hw_grouping_lookup_phase1
         self.hw_grouping_lookup_phase2 = hw_grouping_lookup_phase2
+
+        self._min_m_normalize = 0.03818
         # self.phase_grow_factor = phase_grow_factor
         # self.min_m = min_m
         # self.phase4_min_weeks = phase4_min_weeks
@@ -93,12 +95,26 @@ class Hyperwave:
                 self._delete_above_path(self.hw_path_finder.get_hyperwave_path(df_hyperwave_raw_data)))
 
             min_week = df_hull_hyperwave[(df_hull_hyperwave.m_normalize > 0)].iloc[0]["x1"]
-            if df_hull_hyperwave.loc[0]["m_normalize"] < 0.0:
+            logging.debug(
+                '******************* m_normalize too smaller that {} ****************** '.format(self._min_m_normalize))
+            logging.debug('\n{}'.format(df_hull_hyperwave))
+            logging.debug('Min WeekId : {}'.format(min_week))
+
+            if df_hull_hyperwave.loc[0]["m_normalize"] <= 0.0:
+                continue
+
+            min_week = df_hull_hyperwave[(df_hull_hyperwave.nb_is_lower > 0)].iloc[0]["x1"]
+            if df_hull_hyperwave.loc[0]["nb_is_lower"] == 0:
                 continue
 
             min_week = df_hull_hyperwave[(df_hull_hyperwave.m_normalize > 0)].iloc[0]["x2"]
-            if df_hull_hyperwave.loc[0]["m_normalize"] >= 0.05:
+            if df_hull_hyperwave.loc[0]["m_normalize"] >= self._min_m_normalize :
                 break
+
+            logging.debug(
+                '******************* m_normalize too smaller that {} ****************** '.format(self._min_m_normalize))
+            logging.debug('\n{}'.format(df_hull_hyperwave))
+            logging.debug('Min WeekId : {}'.format(min_week))
 
         hw_phases_temp = Hyperwave._group_hyperwave_phase(df_hull_hyperwave, self.hw_grouping_lookup_phase2)
         max_nb_phases = min(len(hw_phases_temp), 3) * -1
