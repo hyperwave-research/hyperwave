@@ -11,14 +11,7 @@ class Hyperwave:
 
     @classmethod
     def get_standard_hyperwave(cls, phase2_weeks_max: int = 156):
-        hw_grouping_lookup_phase1 = [
-            # HyperwaveGrouperGoldenIncrease(),
-            HyperwaveGrouperByMeanSlopeIncrease(),
-            HyperwaveGrouperSmallWeek(0.07),
-            # HyperwaveWeekLenghtGrouping(group_min_weeks=15),
-            HyperwaveWeekLengthPhase4Grouping(0.07),
-        ]
-        hw_grouping_lookup_phase2 = [
+        hw_grouping_lookup_phase = [
             HyperwaveGrouperGoldenIncrease(),
             HyperwaveGrouperSmallWeek(0.07),
             HyperwaveWeekLengthPhase1Grouping(),
@@ -26,38 +19,17 @@ class Hyperwave:
             HyperwaveGroupingToPhase4()
         ]
 
-        return cls(hw_grouping_lookup_phase1, hw_grouping_lookup_phase2, phase2_weeks_find_max=phase2_weeks_max)
+        return cls(hw_grouping_lookup_phase, phase2_weeks_find_max=phase2_weeks_max)
 
     def __init__(self,
-                 # min_m=0.5,
-                 hw_grouping_lookup_phase1: List[HyperwaveGrouping],
-                 hw_grouping_lookup_phase2: List[HyperwaveGrouping],
-                 phase2_weeks_find_max=156,
-                 # phase_grow_factor=2,
-                 # phase4_min_weeks=15,
-                 hw_path_finder=HyperwavePathFinder(),
+                 hw_grouping_lookup_phase: List[HyperwaveGrouping],
+                 phase2_weeks_find_max: int = 156):
 
-                 # hw_phase_grouper: HyperwavePhaseGrouper = None,
-                 # hw_week_lenght_grouping: HyperwaveWeekLenghtGrouping = None
-                 # # phase4_validation_previous_high=1.3
-                 ):
-        # self.hw_phase_grouper = HyperwavePhaseGrouper(phase_grow_factor) \
-        #     if hw_phase_grouper is None \
-        #     else hw_phase_grouper
-        # self.hw_week_lenght_grouping = HyperwaveWeekLenghtGrouping(phase4_min_weeks, True) \
-        #     if hw_week_lenght_grouping is None \
-        #     else hw_week_lenght_grouping
+        hw_path_finder = HyperwavePathFinder()
         self.hw_path_finder = hw_path_finder
         self.phase2_weeks_find_max = phase2_weeks_find_max
-        self.hw_grouping_lookup_phase1 = hw_grouping_lookup_phase1
-        self.hw_grouping_lookup_phase2 = hw_grouping_lookup_phase2
-
+        self.hw_grouping_lookup_phase = hw_grouping_lookup_phase
         self._min_m_normalize = 0.03818
-        # self.phase_grow_factor = phase_grow_factor
-        # self.min_m = min_m
-        # self.phase4_min_weeks = phase4_min_weeks
-        # self.phase4_validation_previous_high = phase4_validation_previous_high
-        # self.hw_path_finder = hw_path_finder
 
     def get_hyperwave(self, df_source):
         # Step 1 - Get the raw Hull from max and min raw data
@@ -65,22 +37,9 @@ class Hyperwave:
         max_week_id = df_min_to_max.loc[df_min_to_max.loc[:, 'weekId'].idxmax(
         ), 'weekId']
         df_post_max = df_source.loc[max_week_id:]
-        # df_hull = self._order_and_reset_index(
-        #     self._delete_above_path(self.hw_path_finder.get_hyperwave_path(df_min_to_max)))
-        #
-        # hw_phases_first_round = Hyperwave._group_hyperwave_phase(df_hull, self.hw_grouping_lookup_phase1)
-        #
-        # logging.debug("HW Phase search :")
-        # logging.debug(df_hull)
-        # logging.debug(hw_phases_first_round)
-        #
-        # # Step 2 - Find max Price prior of start hyperwave
-        # first_phase_id = min(len(hw_phases_first_round), 3) * -1
-        # phase_2 = hw_phases_first_round[first_phase_id]
-        # min_week = self._get_phase_start_week(df_hull, phase_2)
         min_week = df_min_to_max.loc[df_min_to_max.loc[:, 'weekId'].idxmin(
         ), 'weekId']
-        # Step 3 - Get new Hull for the borned hyperwave raw data
+
         while True:
             max_price_weeks_before_start_week = self._get_max_price_week_before(df_source, min_week,
                                                                                 self.phase2_weeks_find_max)
@@ -95,28 +54,32 @@ class Hyperwave:
                 self._delete_above_path(self.hw_path_finder.get_hyperwave_path(df_hyperwave_raw_data)))
 
             min_week = df_hull_hyperwave[(df_hull_hyperwave.m_normalize > 0)].iloc[0]["x1"]
-            logging.debug(
-                '******************* m_normalize too smaller that {} ****************** '.format(self._min_m_normalize))
+
             logging.debug('\n{}'.format(df_hull_hyperwave))
-            logging.debug('Min WeekId : {}'.format(min_week))
 
             if df_hull_hyperwave.loc[0]["m_normalize"] <= 0.0:
+                logging.debug(
+                    '******************* m_normalize too smaller that {} ****************** '.format(
+                        self._min_m_normalize))
+                logging.debug('Min WeekId : {}'.format(min_week))
                 continue
 
             min_week = df_hull_hyperwave[(df_hull_hyperwave.nb_is_lower > 0)].iloc[0]["x1"]
             if df_hull_hyperwave.loc[0]["nb_is_lower"] == 0:
+                logging.debug(
+                    '******************* nb_is_lower equal 0 ****************** ')
+                logging.debug('Min WeekId : {}'.format(min_week))
                 continue
 
             min_week = df_hull_hyperwave[(df_hull_hyperwave.m_normalize > 0)].iloc[0]["x2"]
-            if df_hull_hyperwave.loc[0]["m_normalize"] >= self._min_m_normalize :
+            if df_hull_hyperwave.loc[0]["m_normalize"] >= self._min_m_normalize:
+                logging.debug(
+                    '******************* Break => This is the one ****************** ')
+
+                logging.debug('Min WeekId : {}'.format(min_week))
                 break
 
-            logging.debug(
-                '******************* m_normalize too smaller that {} ****************** '.format(self._min_m_normalize))
-            logging.debug('\n{}'.format(df_hull_hyperwave))
-            logging.debug('Min WeekId : {}'.format(min_week))
-
-        hw_phases_temp = Hyperwave._group_hyperwave_phase(df_hull_hyperwave, self.hw_grouping_lookup_phase2)
+        hw_phases_temp = Hyperwave._group_hyperwave_phase(df_hull_hyperwave, self.hw_grouping_lookup_phase)
         max_nb_phases = min(len(hw_phases_temp), 3) * -1
         hw_phases_temp = hw_phases_temp[max_nb_phases:]
 
@@ -271,10 +234,12 @@ class Hyperwave:
         df_val_price_greater_than_max = df_week_greater_than[(
                 df_week_greater_than.close > max_price)]
 
-        df_weekid_above_max_price =  df_val_price_greater_than_max.loc[df_val_price_greater_than_max.loc[:, ('weekId')].idxmin()]
+        df_weekid_above_max_price = df_val_price_greater_than_max.loc[
+            df_val_price_greater_than_max.loc[:, ('weekId')].idxmin()]
 
-        return df_weekid_above_max_price['weekId'] if (df_weekid_above_max_price['close'] - max_price) / max_price < 0.1 else df_weekid_above_max_price['weekId'] - 1
-
+        return df_weekid_above_max_price['weekId'] if (df_weekid_above_max_price[
+                                                           'close'] - max_price) / max_price < 0.1 else \
+        df_weekid_above_max_price['weekId'] - 1
 
     @staticmethod
     def _get_phase_start_week(df_result, phase_lines):
