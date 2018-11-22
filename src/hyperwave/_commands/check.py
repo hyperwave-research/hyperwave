@@ -1,13 +1,13 @@
 import datetime
 import os
-import pandas as pd
 
 from hyperwave import Source, TimeFrame, OhlcLoader, Hyperwave
 
 
 def func_check(args):
-    df_raw_data = OhlcLoader.get_historical_data(args.symbol, args.source, time_frame=TimeFrame.Weekly)
     hw = Hyperwave.get_standard_hyperwave()
+    df_raw_data = OhlcLoader.get_historical_data(args.symbol, args.source, time_frame=TimeFrame.Weekly)
+
     (df_hull_hyperwave, hw_phases_temp, hyperwave) =  hw.get_hyperwave(df_raw_data)
 
     if args.outputType == 'display':

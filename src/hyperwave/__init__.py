@@ -1,6 +1,5 @@
 """Minimal Project Task Management."""
 
-
 from .hyperwave_grouping import (
     HyperwaveGrouping,
     HyperwaveWeekLenghtGrouping,
@@ -13,16 +12,25 @@ from .hyperwave_grouping import (
 )
 
 
-from .hyperwave import (  # noqa: F401
-    Hyperwave
-)
 
-from .ohlc_loader import  (  # noqa: F401
+from .ohlc_loader import (
     OhlcLoader,
     Source,
     TimeFrame
 )
 
+from .index import (
+    Index,
+    IndexComposition
+)
+
+from .hyperwave import (
+    Hyperwave,
+)
+
+
+
 from .main import Main
 
 __version__ = '0.1.0'
+
