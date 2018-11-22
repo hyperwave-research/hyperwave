@@ -1,6 +1,9 @@
+import logging
+
 import numpy as np
 import pandas as pd
 from scipy.spatial import ConvexHull
+from scipy.spatial.qhull import QhullError
 
 
 class HyperwavePathFinder:
@@ -24,9 +27,15 @@ class HyperwavePathFinder:
             df_input, 'weekId')
 
         # Use convexHull to find the support lines
-        hull = ConvexHull(
-            df_input[['weekId_normalize', 'close_normalize']].dropna())
-
+        try:
+            hull = ConvexHull(
+                df_input[['weekId_normalize', 'close_normalize']].dropna())
+        except ValueError as e:
+            logging.debug(e)
+            return pd.DataFrame()
+        except QhullError as e:
+            logging.debug(e)
+            return pd.DataFrame()
         hull_results = [[min(pair[0], pair[1]), max(pair[0], pair[1])]
                         for pair in hull.simplices]
         data_from_to = [{"x1": df_input['weekId'].iloc[pair[0]],
