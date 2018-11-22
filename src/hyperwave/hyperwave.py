@@ -1,8 +1,5 @@
-import pandas as pd
-import logging
-from typing import List
+from hyperwave import TimeFrame, Source, OhlcLoader
 
-from hyperwave import HyperwaveWeekLenghtGrouping, HyperwavePhaseGrouper
 from .hyperwave_grouping import *
 from .hyperwavepathfinder import HyperwavePathFinder
 
@@ -49,9 +46,11 @@ class Hyperwave:
                                                                          max_price_weeks_before_start_week)
 
             df_hyperwave_raw_data = df_min_to_max.loc[hw_start_week_id:]
-
+            full_hull = self.hw_path_finder.get_hyperwave_path(df_hyperwave_raw_data)
+            if full_hull.empty:
+                return pd.DataFrame(), [], pd.DataFrame()
             df_hull_hyperwave = self._order_and_reset_index(
-                self._delete_above_path(self.hw_path_finder.get_hyperwave_path(df_hyperwave_raw_data)))
+                self._delete_above_path(full_hull))
 
             min_week = df_hull_hyperwave[(df_hull_hyperwave.m_normalize > 0)].iloc[0]["x1"]
 
@@ -239,7 +238,7 @@ class Hyperwave:
 
         return df_weekid_above_max_price['weekId'] if (df_weekid_above_max_price[
                                                            'close'] - max_price) / max_price < 0.1 else \
-        df_weekid_above_max_price['weekId'] - 1
+            df_weekid_above_max_price['weekId'] - 1
 
     @staticmethod
     def _get_phase_start_week(df_result, phase_lines):
@@ -283,3 +282,6 @@ class Hyperwave:
         last_n_weeks_Items = df[(df.weekId <= weekId)].tail(phase2_weeks_find_max)
         max_price = Hyperwave._get_max_price(last_n_weeks_Items)
         return max_price
+
+
+
