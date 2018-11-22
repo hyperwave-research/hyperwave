@@ -214,7 +214,7 @@ IndexComposition = {
         {'ticker': 'BBY', 'source': Source.Stooq, 'symbol': 'BBY.US'},
         {'ticker': 'BDX', 'source': Source.Stooq, 'symbol': 'BDX.US'},
         {'ticker': 'BEN', 'source': Source.Stooq, 'symbol': 'BEN.US'},
-        {'ticker': 'BF/B', 'source': Source.Stooq, 'symbol': 'BF/B.US'},
+        {'ticker': 'BF/B', 'source': Source.Stooq, 'symbol': 'BF-B.US'},
         {'ticker': 'BHF', 'source': Source.Stooq, 'symbol': 'BHF.US'},
         {'ticker': 'BHGE', 'source': Source.Stooq, 'symbol': 'BHGE.US'},
         {'ticker': 'BIIB', 'source': Source.Stooq, 'symbol': 'BIIB.US'},

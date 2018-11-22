@@ -31,6 +31,9 @@ class Hyperwave:
     def get_hyperwave(self, df_source):
         # Step 1 - Get the raw Hull from max and min raw data
         df_min_to_max = self._borne_raw_data_between_max_to_min(df_source)
+        if df_min_to_max.shape[0] <= 1:
+            return pd.DataFrame(), [], pd.DataFrame()
+
         max_week_id = df_min_to_max.loc[df_min_to_max.loc[:, 'weekId'].idxmax(
         ), 'weekId']
         df_post_max = df_source.loc[max_week_id:]
@@ -40,10 +43,12 @@ class Hyperwave:
         while True:
             max_price_weeks_before_start_week = self._get_max_price_week_before(df_source, min_week,
                                                                                 self.phase2_weeks_find_max)
-
             hw_start_week_id = self._get_weekId_first_price_greater_than(df_min_to_max,
                                                                          min_week,
                                                                          max_price_weeks_before_start_week)
+
+            if df_min_to_max.empty:
+                return pd.DataFrame(), [], pd.DataFrame()
 
             df_hyperwave_raw_data = df_min_to_max.loc[hw_start_week_id:]
             full_hull = self.hw_path_finder.get_hyperwave_path(df_hyperwave_raw_data)
@@ -232,6 +237,9 @@ class Hyperwave:
 
         df_val_price_greater_than_max = df_week_greater_than[(
                 df_week_greater_than.close > max_price)]
+
+        if df_val_price_greater_than_max.empty:
+            return pd.DataFrame()
 
         df_weekid_above_max_price = df_val_price_greater_than_max.loc[
             df_val_price_greater_than_max.loc[:, ('weekId')].idxmin()]
