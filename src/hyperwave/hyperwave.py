@@ -32,7 +32,7 @@ class Hyperwave:
         # Step 1 - Get the raw Hull from max and min raw data
         df_min_to_max = self._borne_raw_data_between_max_to_min(df_source)
         if df_min_to_max.shape[0] <= 1:
-            return pd.DataFrame(), [], pd.DataFrame()
+            return self.get_empty_result(), [], self.get_empty_result()
 
         max_week_id = df_min_to_max.loc[df_min_to_max.loc[:, 'weekId'].idxmax(
         ), 'weekId']
@@ -48,12 +48,12 @@ class Hyperwave:
                                                                          max_price_weeks_before_start_week)
 
             if df_min_to_max.empty:
-                return pd.DataFrame(), [], pd.DataFrame()
+                return self.get_empty_result(), [], self.get_empty_result()
 
             df_hyperwave_raw_data = df_min_to_max.loc[hw_start_week_id:]
             full_hull = self.hw_path_finder.get_hyperwave_path(df_hyperwave_raw_data)
             if full_hull.empty:
-                return pd.DataFrame(), [], pd.DataFrame()
+                return self.get_empty_result(), [], self.get_empty_result()
             df_hull_hyperwave = self._order_and_reset_index(
                 self._delete_above_path(full_hull))
 
@@ -114,6 +114,14 @@ class Hyperwave:
         df_hyperwave_phases = self._order_and_reset_index(df_hyperwave_phases)
         df_hyperwave_phases = df_hyperwave_phases.drop(['index'], axis=1)
         return df_hull_hyperwave, hw_phases_temp, df_hyperwave_phases
+
+    @staticmethod
+    def get_empty_result():
+        return pd.DataFrame(
+            columns=['angle', 'angle_normalize', 'b', 'b_normalize', 'is-broken', 'm', 'm_normalize', 'mean_error',
+                     'nb_is_lower', 'phase_id', 'ratio_error_cut', 'ratio_slope_y1_normalize',
+                     'ratio_slope_y2_normalize', 'weeks', 'x1', 'x1_date', 'x1_normalize', 'x2', 'x2_date',
+                     'x2_normalize', 'y1', 'y1_normalize', 'y2', 'y2_normalize'])
 
     @staticmethod
     def get_phase(phases, phase_id):
@@ -290,6 +298,3 @@ class Hyperwave:
         last_n_weeks_Items = df[(df.weekId <= weekId)].tail(phase2_weeks_find_max)
         max_price = Hyperwave._get_max_price(last_n_weeks_Items)
         return max_price
-
-
-

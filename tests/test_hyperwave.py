@@ -38,12 +38,12 @@ def test_hyperwaves(source_name: str, result_file_name: str,  comment: str):
     hyperwave.sort_values('phase_id', ascending=True).to_csv(result_output_path , header=True, index=False)
     df_result = df_result.sort_values('phase_id', ascending=True).reset_index()
     hyperwave = hyperwave.sort_values('phase_id', ascending=True).reset_index()
-    pd.testing.assert_frame_equal(df_result, hyperwave , check_less_precise=True )
+    pd.testing.assert_frame_equal(df_result, hyperwave , check_less_precise=True, check_like=True )
 
 
 # @pytest.mark.usefixtures("set_env_variable")
 def test_single_hyperwave():
-    source_name = "BHF.US"
+    source_name = "Stooq_BHF.US_20181122"
     df_source = OhlcLoader.get_historical_data(
         source_name, Source.LocalData, time_frame=TimeFrame.Weekly)
 
