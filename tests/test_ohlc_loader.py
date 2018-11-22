@@ -107,6 +107,17 @@ def test_that_local_data_source_return_right_schema_dataframe():
     assert (df.columns.sort_values() ==
             data_source_required_columns).all()
 
+def test_that_local_data_source_raise_filenotfound_error():
+    base_dir = path.dirname(path.abspath(
+        inspect.getfile(inspect.currentframe())))
+    sample_data_path = path.join(base_dir, "sample_data")
+
+    os.environ["HW_DATA_ROOT_FOLDER"] = sample_data_path
+    with pytest.raises(FileNotFoundError):
+        df = OhlcLoader.get_historical_data(
+            "unknow_file", Source.LocalData, base_date, TimeFrame.Weekly)
+
+
 
 def test_that_we_can_load_from_stooq():
     df = OhlcLoader.get_historical_data("BTCUSD", Source.Stooq, base_date)

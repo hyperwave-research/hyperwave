@@ -15,8 +15,8 @@ class LocalDataLoader:
         root_path = os.getenv(ENV_HW_DATA_ROOT_FOLDER, '.')
         file_path = path.join(root_path, self._file_name)
         if not path.exists(file_path):
-            raise "Cannot find the data in the path {}. The root folder is {}. You can set the env variable {} for the root path".format(
-                file_path, root_path, ENV_HW_DATA_ROOT_FOLDER)
+            raise FileNotFoundError("Cannot find the data in the path {}. The root folder is {}. You can set the env variable {} for the root path".format(
+                file_path, root_path, ENV_HW_DATA_ROOT_FOLDER))
 
         df = pd.read_csv(file_path, header=0, parse_dates=True)
         df = df.rename(columns={column: column.lower()
