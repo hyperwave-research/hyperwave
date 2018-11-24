@@ -42,18 +42,18 @@ def test_hyperwaves(source_name: str, result_file_name: str,  comment: str):
 
 
 # @pytest.mark.usefixtures("set_env_variable")
-def test_single_hyperwave():
-    source_name = "Stooq_BHF.US_20181122"
-    df_source = OhlcLoader.get_historical_data(
-        source_name, Source.LocalData, time_frame=TimeFrame.Weekly)
-
-    hw = Hyperwave.get_standard_hyperwave()
-    (df_hull_hyperwave, hw_phases_temp, hyperwave) = hw.get_hyperwave(df_source)
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.width', 150):
-        print(df_hull_hyperwave)
-        print(hw_phases_temp)
-        print(hyperwave)
-    assert 4 == hyperwave.shape[0]
+# def test_single_hyperwave():
+#     source_name = "Stooq_BHF.US_20181122"
+#     df_source = OhlcLoader.get_historical_data(
+#         source_name, Source.LocalData, time_frame=TimeFrame.Weekly)
+#
+#     hw = Hyperwave.get_standard_hyperwave()
+#     (df_hull_hyperwave, hw_phases_temp, hyperwave) = hw.get_hyperwave(df_source)
+#     with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.width', 150):
+#         print(df_hull_hyperwave)
+#         print(hw_phases_temp)
+#         print(hyperwave)
+#     assert 4 == hyperwave.shape[0]
 
 #
 # def test_resave_result_to_csv():
