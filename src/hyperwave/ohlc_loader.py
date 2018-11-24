@@ -1,8 +1,8 @@
-import numpy as np
-import pandas as pd
 import datetime as dt
 
-from enum import Enum
+import numpy as np
+import pandas as pd
+from hyperwave import Source, TimeFrame
 
 from hyperwave.helpers.advance_enum import AdvanceEnum
 
@@ -10,8 +10,7 @@ from ._Ohlc_loaders.crypto_compare_loader import CryptoCompareLoader
 from ._Ohlc_loaders.investopedia_loader import InvestopediaLoader
 from ._Ohlc_loaders.local_data_loader import LocalDataLoader
 from ._Ohlc_loaders.stooq_loader import StooqLoader
-
-# from _Ohlc_loaders.Quantdl_Loader import Quandl_Loader
+from ._Ohlc_loaders.tiingo_loader import TiingoLoader
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -27,24 +26,12 @@ def _add_weekid_and_price_is_closing_up(df, base_date):
         df = df.drop("volume", axis=1)
     return df
 
-
-class Source(AdvanceEnum):
-    CryptoCompare = 1
-    Investopedia = 2
-    LocalData = 3
-    Stooq = 4
-
-
-class TimeFrame(AdvanceEnum):
-    Daily = 1
-    Weekly = 2
-
-
 _sources_map = {
     Source.Investopedia: InvestopediaLoader,
     Source.CryptoCompare: CryptoCompareLoader,
     Source.LocalData: LocalDataLoader,
-    Source.Stooq: StooqLoader
+    Source.Stooq: StooqLoader,
+    Source.Tiingo: TiingoLoader
 }
 
 
@@ -57,8 +44,7 @@ class OhlcLoader:
     @staticmethod
     def get_historical_data(symbol: str, source: Source, base_date: dt.datetime = dt.datetime(1789, 1, 5),
                             time_frame: TimeFrame = TimeFrame.Weekly):
-        str_time_frame = 'WEEKLY' if time_frame == TimeFrame.Weekly else 'DAILY'
-        source_class = _sources_map[source](symbol, str_time_frame)
+        source_class = _sources_map[source](symbol, time_frame)
         df_raw = source_class.get_dataframe()
         df_with_week_id = _add_weekid_and_price_is_closing_up(df_raw, base_date)
         df_with_week_id = df_with_week_id.reset_index(drop=True)

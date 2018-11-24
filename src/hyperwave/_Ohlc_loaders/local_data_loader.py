@@ -3,11 +3,14 @@ import os
 
 from os import path
 
+
+from hyperwave import TimeFrame
+
 ENV_HW_DATA_ROOT_FOLDER = "HW_DATA_ROOT_FOLDER"
 
 
 class LocalDataLoader:
-    def __init__(self, symbol: str, time_frame: str = 'weekly'):
+    def __init__(self, symbol: str, time_frame: TimeFrame = TimeFrame.Weekly):
         self._file_name = "{}.csv".format(symbol)
         self._time_frame = time_frame
 

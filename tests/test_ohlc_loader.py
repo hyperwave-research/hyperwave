@@ -71,7 +71,7 @@ data_source_required_columns = [
 
 def test_that_source_available_is_equal_to_4():
     sources = OhlcLoader.get_available_sources()
-    assert len(sources) == 4
+    assert len(sources) == 5
 
 
 def test_that_cryptocompare_source_return_right_schema_dataframeHyperwave_Path_Finder():
@@ -128,3 +128,8 @@ def test_that_we_can_load_from_stooq():
 def test_stooq_fail_load_apple():
     with pytest.raises(NameError):
         df = OhlcLoader.get_historical_data("AAPL", Source.Stooq, base_date)
+
+def test_tiingo_can_load_data():
+    df = OhlcLoader.get_historical_data("AAPL", Source.Tiingo, base_date)
+    assert (df.columns.sort_values() ==
+            data_source_required_columns).all()

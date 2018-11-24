@@ -12,11 +12,13 @@ from .hyperwave_grouping import (
 )
 
 
+from .global_enum import (
+    Source,
+    TimeFrame
+)
 
 from .ohlc_loader import (
     OhlcLoader,
-    Source,
-    TimeFrame
 )
 
 from .index import (
