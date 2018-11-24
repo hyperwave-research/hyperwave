@@ -16,7 +16,7 @@ def func_check(args):
             pbar.update(1)
             return hyperwave
 
-        result = [get_hyperwave_from_source(info['source'], info['symbol'], info['ticker']) for info in
+        result = [get_hyperwave_from_source(info['source'], info['ticker'], info['ticker']) for info in
                   index_composition]
 
     hyperwaves = pd.concat(result)
