@@ -1,6 +1,7 @@
 from os import path
 
 from hyperwave import TimeFrame, OhlcLoader, Index, IndexComposition
+from hyperwave.helpers.advance_enum import str2bool
 from tqdm import tqdm
 
 
@@ -33,7 +34,7 @@ def set_command(subparsers, parents):
     download_index_parser.add_argument('--index', type=Index.from_string, choices=list(Index))
     download_index_parser.add_argument('--outputPath', type=str,
                                 help="Path to the file you want to save the Open, High, Low, Close data")
-    download_index_parser.add_argument('--override', type=bool, default=True,
+    download_index_parser.add_argument('--override', type=str2bool, default=True,
                                 help="force override the data is the file exist")
     download_index_parser.add_argument('--timeframe', type=TimeFrame.from_string, choices=list(TimeFrame),
                                 default=TimeFrame.Weekly, required=False,
