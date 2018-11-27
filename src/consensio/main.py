@@ -15,7 +15,7 @@ def get_argparse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', help="Set verbose mode")
 
-    parent_parser = argparse.ArgumentParser(description="Hyperwave finder", add_help=False)
+    parent_parser = argparse.ArgumentParser(add_help=False, description="this is a description")
     parent_parser.add_argument("-v", required=False, action='count', help="Set the logging mode to verbose")
 
     subparsers = parser.add_subparsers()

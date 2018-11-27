@@ -1,13 +1,11 @@
 import os
 
-from datareader import Index, Loader, TimeFrame, IndexComposition, Source
-from hyperwave import Hyperwave
+from consensio import consensio
+from hyperwave import OhlcLoader, TimeFrame, Source
 from tqdm import tqdm
 import pandas as pd
 
 def func_check(args):
-    hw = Hyperwave.get_standard_hyperwave()
-
     base_dir = os.path.abspath(args.inputPath)
     os.environ["HW_DATA_ROOT_FOLDER"] = base_dir
 
@@ -16,23 +14,22 @@ def func_check(args):
     with tqdm(total=len(tickers)) as pbar:
         def get_hyperwave_from_source(source, symbol, ticker):
             pbar.set_description("Processing %s" % symbol)
-            df_raw_data = Loader.get_historical_data(symbol, source, time_frame=TimeFrame.Weekly)
+            df_raw_data = OhlcLoader.get_historical_data(symbol, source, time_frame=TimeFrame.Weekly)
 
-            (df_hull_hyperwave, hw_phases_temp, hyperwave) = hw.get_hyperwave(df_raw_data)
-            hyperwave['ticker'] = ticker
+            result = consensio.get_consonsio( df_raw_data)[['date', 'consensio']].rename(columns={'consensio': symbol}).reset_index(drop=True).set_index('date')
             pbar.update(1)
-            return hyperwave
+            return result
 
         result = [get_hyperwave_from_source(Source.LocalData, ticker, ticker) for ticker in
                   tickers]
 
-    hyperwaves = pd.concat(result)
+    consensios = pd.concat(result, axis=1)
 
-    print(hyperwaves)
-    hyperwaves.to_csv(args.outputPath)
+    print(consensios)
+    consensios.to_csv(args.outputPath)
 
 def set_command(subparsers, parents):
-    check_parser = subparsers.add_parser("check-index-folder", parents=parents,
+    check_parser = subparsers.add_parser("calculate", parents=parents,
                                          description="check the given index for hyperwave")
     check_parser.add_argument('--inputPath', type=str, default='.')
     check_parser.add_argument('--outputPath', type=str, default='hyperwaves.csv', help="Path to the folder where we persist the result")

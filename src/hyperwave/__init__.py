@@ -11,21 +11,6 @@ from .hyperwave_grouping import (
     HyperwaveGrouperByMedianSlopeIncrease
 )
 
-
-from .global_enum import (
-    Source,
-    TimeFrame
-)
-
-from .ohlc_loader import (
-    OhlcLoader,
-)
-
-from .index import (
-    Index,
-    IndexComposition
-)
-
 from .hyperwave import (
     Hyperwave,
 )

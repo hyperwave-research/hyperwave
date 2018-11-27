@@ -1,4 +1,5 @@
-from hyperwave import Index, OhlcLoader, Hyperwave, TimeFrame, IndexComposition
+from datareader import Index, Loader, TimeFrame, IndexComposition
+from hyperwave import Hyperwave
 from tqdm import tqdm
 import pandas as pd
 
@@ -9,7 +10,7 @@ def func_check(args):
     with tqdm(total=len(index_composition)) as pbar:
         def get_hyperwave_from_source(source, symbol, ticker):
             pbar.set_description("Processing %s" % symbol)
-            df_raw_data = OhlcLoader.get_historical_data(symbol, source, time_frame=TimeFrame.Weekly)
+            df_raw_data = Loader.get_historical_data(symbol, source, time_frame=TimeFrame.Weekly)
 
             (df_hull_hyperwave, hw_phases_temp, hyperwave) = hw.get_hyperwave(df_raw_data)
             hyperwave['ticker'] = ticker

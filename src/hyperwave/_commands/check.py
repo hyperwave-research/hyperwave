@@ -1,12 +1,13 @@
 import datetime
 import os
 
-from hyperwave import Source, TimeFrame, OhlcLoader, Hyperwave
+from datareader import Source, TimeFrame, Loader
+from hyperwave import Hyperwave
 
 
 def func_check(args):
     hw = Hyperwave.get_standard_hyperwave()
-    df_raw_data = OhlcLoader.get_historical_data(args.symbol, args.source, time_frame=TimeFrame.Weekly)
+    df_raw_data = Loader.get_historical_data(args.symbol, args.source, time_frame=TimeFrame.Weekly)
 
     (df_hull_hyperwave, hw_phases_temp, hyperwave) =  hw.get_hyperwave(df_raw_data)
 

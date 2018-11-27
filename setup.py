@@ -20,6 +20,8 @@ setup(
     entry_points={
         'console_scripts': [
             'hw = hyperwave.main:Main',
+            'consensio = consensio.main:Main',
+            'datareader = datareader.main:Main',
         ]
     },
 )
