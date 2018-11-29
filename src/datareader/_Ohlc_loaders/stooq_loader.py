@@ -8,7 +8,7 @@ class StooqLoader:
         self._time_frame = time_frame
 
     def _fetch_data(self):
-        time_frame = 'w' if self._time_frame == 'WEEKLY' else 'd'
+        time_frame = 'w' if self._time_frame == TimeFrame.Weekly else 'd'
         url_symbol = "https://stooq.com/q/d/l/?s={}&i={}".format(self._symbol, time_frame)
         df_list = pd.read_csv(url_symbol, header=0, parse_dates=True)
         if df_list.empty:
