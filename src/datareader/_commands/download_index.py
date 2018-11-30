@@ -9,7 +9,7 @@ from tqdm import tqdm
 def func_download_index(args):
     source = Source.Tiingo
     index = args.index
-    symbols = [v['ticker'] for v in IndexComposition[index]]
+    symbols = [(v['ticker'], v['symbol']) for v in IndexComposition[index]]
     output_path = args.outputPath
     time_frame = args.timeframe
     nb_thread = args.nbThread
@@ -27,9 +27,7 @@ def set_command(subparsers, parents):
     download_parse = subparsers.add_parser("download-index",
                                            parents=parents,
                                            description="Download the given symbol and save the data to the output path")
-    # download_parse.add_argument('--source',
-    #                             type=Source.from_string,
-    #                             choices=list(Source))
+
     download_parse.add_argument('--index', type=Index.from_string, choices=list(Index))
 
     download_parse.add_argument('--outputPath',
