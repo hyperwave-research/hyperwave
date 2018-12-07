@@ -1,6 +1,6 @@
 import os
 
-from datareader import Index, Loader, TimeFrame, IndexComposition, Source
+from datareader import Groups, Loader, TimeFrame, GroupComposition, Source
 from hyperwave import Hyperwave
 from tqdm import tqdm
 import pandas as pd
@@ -9,9 +9,10 @@ def func_check(args):
     hw = Hyperwave.get_standard_hyperwave()
 
     base_dir = os.path.abspath(args.inputPath)
-    os.environ["HW_DATA_ROOT_FOLDER"] = base_dir
+    # os.environ["HW_DATA_ROOT_FOLDER"] = base_dir
 
-    tickers = [os.path.splitext(os.path.basename(file))[0] for file in os.listdir(base_dir)]
+    tickers = [(os.path.splitext(os.path.basename(file))[0],
+                os.path.join(base_dir, file))for file in os.listdir(base_dir)]
 
     with tqdm(total=len(tickers)) as pbar:
         def get_hyperwave_from_source(source, symbol, ticker):
@@ -23,7 +24,7 @@ def func_check(args):
             pbar.update(1)
             return hyperwave
 
-        result = [get_hyperwave_from_source(Source.LocalData, ticker, ticker) for ticker in
+        result = [get_hyperwave_from_source(Source.LocalData, ticker[1], ticker[0]) for ticker in
                   tickers]
 
     hyperwaves = pd.concat(result)

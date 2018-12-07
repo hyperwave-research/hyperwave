@@ -7,9 +7,10 @@ from .ohlc_loader import (
     Loader
 )
 
-from .index import (
-    Index,
-    IndexComposition
+from .groups import (
+    Groups,
+    GroupComposition,
+    TickerInfo
 )
 
 from .main import Main

@@ -1,5 +1,6 @@
-from datareader import Source, TimeFrame
+from datareader import Source, TimeFrame, TickerInfo
 from datareader._commands.helper import fetch_symbols
+
 
 
 def func_download(args):
@@ -14,7 +15,7 @@ def func_download(args):
     print("Symbols : {}".format(symbols))
     print("Time frame : {}".format(time_frame))
 
-    fetch_symbols(source, [(s, s) for s in symbols], output_path, time_frame, nb_thread)
+    fetch_symbols([TickerInfo(s, source, s) for s in symbols], output_path, time_frame, nb_thread)
 
 
 def set_command(subparsers, parents):

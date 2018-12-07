@@ -1,15 +1,15 @@
 from os import path
 
-from datareader import TimeFrame, Loader, Index, IndexComposition, Source
+from datareader import TimeFrame, Loader, Groups, GroupComposition, Source, TickerInfo
 from datareader._commands.helper import fetch_symbols
 from helpers import str2bool
 from tqdm import tqdm
 
 
 def func_download_index(args):
-    source = Source.Tiingo
+    source = Source.Stooq
     index = args.index
-    symbols = [(v['ticker'], v['symbol']) for v in IndexComposition[index]]
+    ticker_infos = GroupComposition[index]
     output_path = args.outputPath
     time_frame = args.timeframe
     nb_thread = args.nbThread
@@ -17,10 +17,10 @@ def func_download_index(args):
     print("Download data :")
     print("Source : {}".format(source))
     print("Index: {}".format(index))
-    print("Symbols : {}".format(symbols))
+    print("Symbols : {}".format([ticker_info.ticker for ticker_info in ticker_infos]))
     print("Time frame : {}".format(time_frame))
 
-    fetch_symbols(source, symbols, output_path, time_frame, nb_thread)
+    fetch_symbols(ticker_infos, output_path, time_frame, nb_thread)
 
 
 def set_command(subparsers, parents):
@@ -28,7 +28,7 @@ def set_command(subparsers, parents):
                                            parents=parents,
                                            description="Download the given symbol and save the data to the output path")
 
-    download_parse.add_argument('--index', type=Index.from_string, choices=list(Index))
+    download_parse.add_argument('--index', type=Groups.from_string, choices=list(Groups))
 
     download_parse.add_argument('--outputPath',
                                 type=str,

@@ -1,11 +1,11 @@
-from datareader import Index, Loader, TimeFrame, IndexComposition
+from datareader import Groups, Loader, TimeFrame, GroupComposition
 from hyperwave import Hyperwave
 from tqdm import tqdm
 import pandas as pd
 
 def func_check(args):
     hw = Hyperwave.get_standard_hyperwave()
-    index_composition = IndexComposition.get(args.name)
+    index_composition = GroupComposition.get(args.name)
 
     with tqdm(total=len(index_composition)) as pbar:
         def get_hyperwave_from_source(source, symbol, ticker):
@@ -28,7 +28,7 @@ def func_check(args):
 def set_command(subparsers, parents):
     check_parser = subparsers.add_parser("check-index", parents=parents,
                                          description="check the given index for hyperwave")
-    check_parser.add_argument('--index', type=Index.from_string, choices=list(Index))
+    check_parser.add_argument('--index', type=Groups.from_string, choices=list(Groups))
 
     # check_parser.add_argument('--symbol', type=str, help="The synbol for which you want to download the data")
     # check_parser.add_argument('--outputType', type=str,choices=["display", "file"], default="display", help="Set the output source. Default display")

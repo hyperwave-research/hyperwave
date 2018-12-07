@@ -1,8 +1,9 @@
 import concurrent.futures
 from os import path
-from typing import List, Tuple
+from typing import List
 
 from datareader import TimeFrame, Source, Loader
+from datareader import TickerInfo
 from tqdm import tqdm
 
 
@@ -11,14 +12,14 @@ def task_fetch_symbol(source: Source, symbol: str, output_path: str, timeframe: 
     data.to_csv(output_path, columns=['date', 'close', 'high', 'low', 'open'], index=False, header=True)
 
 
-def fetch_symbols(source: Source, symbols: List[Tuple[str,str]], output_path: str, time_frame: TimeFrame, nb_thread: int):
+def fetch_symbols(ticker_infos: List[TickerInfo], output_path: str, time_frame: TimeFrame, nb_thread: int):
     if nb_thread > 1:
         with concurrent.futures.ThreadPoolExecutor(max_workers=nb_thread) as executor:
             # Start the load operations and mark each future with its URL
             future_to_url = {
-                executor.submit(task_fetch_symbol, source, symbol[1], path.join(output_path, "{}.csv".format(symbol[0])),
-                                time_frame): symbol[0] for symbol in symbols}
-            with tqdm(total=len(symbols)) as pbar:
+                executor.submit(task_fetch_symbol, ticker_info.source, ticker_info.symbol, path.join(output_path, "{}.csv".format(ticker_info.ticker)),
+                                time_frame): ticker_info.ticker for ticker_info in ticker_infos}
+            with tqdm(total=len(ticker_infos)) as pbar:
                 for future in concurrent.futures.as_completed(future_to_url):
                     symbol = future_to_url[future]
                     try:
@@ -29,8 +30,8 @@ def fetch_symbols(source: Source, symbols: List[Tuple[str,str]], output_path: st
                         pbar.set_description("Processing %s" % symbol)
                     pbar.update(1)
     else:
-        with tqdm(total=len(symbols)) as pbar:
-            for symbol in symbols:
-                task_fetch_symbol(source, symbol[1], path.join(output_path, "{}.csv".format(symbol[0])), time_frame)
-                pbar.set_description("Processing %s" % symbol[0])
+        with tqdm(total=len(ticker_infos)) as pbar:
+            for ticker_info in ticker_infos:
+                task_fetch_symbol(ticker_info.source, ticker_info.symbol, path.join(output_path, "{}.csv".format(ticker_info.ticker)), time_frame)
+                pbar.set_description("Processing %s" % ticker_info.symbol)
                 pbar.update(1)
