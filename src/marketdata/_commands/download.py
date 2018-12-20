@@ -1,6 +1,7 @@
-from datareader import Source, TimeFrame, TickerInfo
-from datareader._commands.helper import fetch_symbols
+import multiprocessing
 
+from marketdata import Source, TimeFrame, TickerInfo
+from marketdata._commands.helper import fetch_symbols
 
 
 def func_download(args):
@@ -14,6 +15,7 @@ def func_download(args):
     print("Source : {}".format(source))
     print("Symbols : {}".format(symbols))
     print("Time frame : {}".format(time_frame))
+    print("Nb Thread : {}".format(nb_thread))
 
     fetch_symbols([TickerInfo(s, source, s) for s in symbols], output_path, time_frame, nb_thread)
 
@@ -35,6 +37,6 @@ def set_command(subparsers, parents):
                                 type=TimeFrame.from_string, choices=list(TimeFrame),
                                 default=TimeFrame.Weekly, required=False,
                                 help="Timeframe of the data. Default value Weekly")
-    download_parse.add_argument('--nbThread', type=int, default=1, required=False,
+    download_parse.add_argument('--nbThread', type=int, default=multiprocessing.cpu_count() * 2, required=False,
                                 help="Number of parallel load. Default(1)")
     download_parse.set_defaults(func=func_download)

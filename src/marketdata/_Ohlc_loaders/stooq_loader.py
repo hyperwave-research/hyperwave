@@ -1,5 +1,5 @@
 import pandas as pd
-from datareader import TimeFrame
+from marketdata import TimeFrame
 
 
 class StooqLoader:

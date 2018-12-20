@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
-from datareader import Loader, Source, TimeFrame
+from marketdata import Loader, Source, TimeFrame
 
 base_date = datetime(1900, 1, 1)
 
@@ -64,7 +64,7 @@ INVESTOPIA_SAMPLE_DATA = """
     </html>"""
 
 data_source_required_columns = [
-    'close', 'date', 'high', 'is_price_closing_up', 'low', 'open', 'weekId']
+    'close', 'date', 'high', 'is_price_closing_up', 'low', 'open', 'volume', 'weekId']
 
 
 def test_that_source_available_is_equal_to_5():

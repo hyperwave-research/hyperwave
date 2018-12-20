@@ -15,13 +15,13 @@ setup(
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
 
-    install_requires=['numpy', 'pandas', 'pytest-runner', 'attrs', 'pytest', 'scipy', 'tqdm'],
-
+    install_requires=['numpy', 'pandas', 'scipy', 'requests', 'tqdm'],
+    extras_require={"dev": [["pytest", "pytest-runner"]]},
     entry_points={
         'console_scripts': [
             'hw = hyperwave.main:Main',
             'consensio = consensio.main:Main',
-            'datareader = datareader.main:Main',
+            'marketdata = marketdata.main:Main',
         ]
     },
 )

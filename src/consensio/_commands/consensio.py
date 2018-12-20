@@ -1,7 +1,7 @@
 import os
 
 from consensio import consensio
-from datareader import Loader, TimeFrame, Source
+from marketdata import Loader, TimeFrame, Source
 from tqdm import tqdm
 import pandas as pd
 
@@ -27,8 +27,11 @@ def func_check(args):
 
     consensios = pd.concat(result, axis=1)
 
-    print(consensios)
     consensios.to_csv(args.outputPath)
+    # loop = asyncio.get_event_loop()
+    #
+    # loop.run_in_executor()
+
 
 
 def set_command(subparsers, parents):

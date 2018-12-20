@@ -4,7 +4,7 @@ import os
 from os import path
 
 
-from datareader import TimeFrame
+from marketdata import TimeFrame
 
 ENV_HW_DATA_ROOT_FOLDER = "HW_DATA_ROOT_FOLDER"
 

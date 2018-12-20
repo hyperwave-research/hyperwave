@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 import requests
-from datareader import TimeFrame
+from marketdata import TimeFrame
 
 
 class TiingoLoader:

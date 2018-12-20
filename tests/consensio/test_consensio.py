@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import pytest
 from consensio import get_rolling_mean, get_move_value, get_value_between_two_col, get_consonsio
-from datareader import Loader, Source, TimeFrame
+from marketdata import Loader, Source, TimeFrame
 
 
 def test_return_mean_serie():

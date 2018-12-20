@@ -1,4 +1,4 @@
-from datareader import Groups, Loader, TimeFrame, GroupComposition
+from marketdata import Groups, Loader, TimeFrame, GroupComposition
 from hyperwave import Hyperwave
 from tqdm import tqdm
 import pandas as pd

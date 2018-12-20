@@ -2,7 +2,7 @@ import datetime as dt
 
 import numpy as np
 import pandas as pd
-from datareader import Source, TimeFrame
+from marketdata import Source, TimeFrame
 
 from ._Ohlc_loaders.crypto_compare_loader import CryptoCompareLoader
 from ._Ohlc_loaders.investopedia_loader import InvestopediaLoader
@@ -20,8 +20,8 @@ def _get_nb_weeks(row, base_date):
 def _add_weekid_and_price_is_closing_up(df, base_date):
     df['is_price_closing_up'] = df.close > df.close.shift()
     df['weekId'] = df.apply(lambda row: _get_nb_weeks(row, base_date), axis=1)
-    if "volume" in list(df.columns.values):
-        df = df.drop("volume", axis=1)
+    if not "volume" in list(df.columns.values):
+        df['volume'] =  0.
     return df
 
 _sources_map = {

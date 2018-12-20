@@ -1,5 +1,5 @@
-from attr import dataclass
-from datareader import Source
+from dataclasses import dataclass
+from marketdata import Source
 from helpers.advance_enum import AdvanceEnum
 
 

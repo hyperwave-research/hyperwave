@@ -1,4 +1,4 @@
-from datareader import TimeFrame, Source, Loader
+from marketdata import TimeFrame, Source, Loader
 
 from .hyperwave_grouping import *
 from .hyperwavepathfinder import HyperwavePathFinder

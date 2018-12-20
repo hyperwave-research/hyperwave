@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from datareader import Source, TimeFrame, Loader
+from marketdata import Source, TimeFrame, Loader
 from hyperwave import Hyperwave
 
 

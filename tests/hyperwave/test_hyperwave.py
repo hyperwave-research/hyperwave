@@ -4,7 +4,7 @@ import os
 
 import pandas as pd
 import pytest
-from datareader import Source, TimeFrame, Loader
+from marketdata import Source, TimeFrame, Loader
 from hyperwave import Hyperwave
 
 logging.basicConfig(level=logging.ERROR)
