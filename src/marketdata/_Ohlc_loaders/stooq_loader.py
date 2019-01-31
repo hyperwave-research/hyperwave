@@ -14,8 +14,9 @@ class StooqLoader:
         if df_list.empty:
             raise NameError("The query {} return no data for the symbol. Please check the synbol name in "
                             "https://stooq.com/".format(url_symbol, self._symbol))
-        df_price = df_list.dropna()
-        return df_price
+        # df_list = df_list.fillna(value=0,axis='Volume')
+        # df_price = df_list.dropna()
+        return df_list
 
     def get_dataframe(self):
         raw_data = self._fetch_data()

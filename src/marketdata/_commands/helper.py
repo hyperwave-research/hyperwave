@@ -10,12 +10,17 @@ from tqdm import tqdm
 
 
 def task_fetch_symbol(source: Source, symbol: str, output_path: str, timeframe: TimeFrame):
-    data = Loader.get_historical_data(symbol, source, time_frame=timeframe)
-    data.to_csv(output_path, columns=['date', 'close', 'high', 'low', 'open'], index=False, header=True)
-    return symbol
+    try:
+        data = Loader.get_historical_data(symbol, source, time_frame=timeframe)
+        data.to_csv(output_path, columns=['date', 'close', 'high', 'low', 'open'], index=False, header=True)
+    except:
+        return (False, symbol)
+
+    return (True, symbol)
 
 def fetch_symbols(ticker_infos: List[TickerInfo], output_path: str, time_frame: TimeFrame, nb_thread: int):
     event_loop = asyncio.new_event_loop()
+    # asyncio.set_event_loop( event_loop )
     p = ThreadPoolExecutor( nb_thread )
 
     async def load_data():
@@ -26,8 +31,11 @@ def fetch_symbols(ticker_infos: List[TickerInfo], output_path: str, time_frame: 
             while futures:
                 done, futures = await asyncio.wait(futures, return_when=asyncio.FIRST_COMPLETED)
                 for f in done:
-                    symbol = await f
-                    pbar.set_description("Processing %s" % symbol)
+                    no_error, symbol = await f
+                    if no_error:
+                        pbar.set_description("done %s" % symbol)
+                    else:
+                        pbar.set_description("Error %s" % symbol)
                     pbar.update(1)
 
 
