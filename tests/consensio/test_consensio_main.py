@@ -10,9 +10,16 @@ def test_run_consensio(monkeypatch, tmpdir):
     data_dir = os.path.join(base_dir, "folder_test")
 
     result_path = os.path.join(tmpdir, "HSBC_Consensio.csv")
-    arg_sample = ['main.py', 'calculate', '--inputPath', data_dir , '--outputPath', result_path ]
+    arg_sample = [
+        "main.py",
+        "calculate",
+        "--inputPath",
+        data_dir,
+        "--outputPath",
+        result_path,
+    ]
 
-    monkeypatch.setattr(sys, 'argv', arg_sample)
+    monkeypatch.setattr(sys, "argv", arg_sample)
     Main()
 
     assert os.path.exists(result_path)

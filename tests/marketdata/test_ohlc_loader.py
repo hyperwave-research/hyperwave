@@ -4,9 +4,10 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
+import pytz
 from marketdata import Loader, Source, TimeFrame
 
-base_date = datetime(1900, 1, 1)
+base_date = datetime(1900, 1, 1, tzinfo=pytz.utc)
 
 INVESTOPIA_SAMPLE_DATA = """
     <html>
@@ -64,7 +65,15 @@ INVESTOPIA_SAMPLE_DATA = """
     </html>"""
 
 data_source_required_columns = [
-    'close', 'date', 'high', 'is_price_closing_up', 'low', 'open', 'volume', 'weekId']
+    "close",
+    "date",
+    "high",
+    "is_price_closing_up",
+    "low",
+    "open",
+    "volume",
+    "weekId",
+]
 
 
 def test_that_source_available_is_equal_to_5():
@@ -74,53 +83,59 @@ def test_that_source_available_is_equal_to_5():
 
 def test_that_cryptocompare_source_return_right_schema_dataframeHyperwave_Path_Finder():
     df = Loader.get_historical_data(
-        "BTC-USD", Source.CryptoCompare, base_date, TimeFrame.Weekly)
+        "BTC-USD", Source.CryptoCompare, base_date, TimeFrame.Weekly
+    )
     assert (df.columns.sort_values() == data_source_required_columns).all()
 
 
 def test_that_investopedia_source_return_right_schema_dataframe(monkeypatch):
     def mock_pandas_read_html(url_symbol, header, parse_dates):
         data = [
-            {"Date": "Oct 01, 2018", "Open": 227.95, "High": 229.42,
-             "Low": 226.35, "Adj. Close": 227.26, "Volume": 23600802},
+            {
+                "Date": "Oct 01, 2018",
+                "Open": 227.95,
+                "High": 229.42,
+                "Low": 226.35,
+                "Adj. Close": 227.26,
+                "Volume": 23600802,
+            }
         ]
         return [pd.DataFrame(data)]
 
-    monkeypatch.setattr(pd, 'read_html', mock_pandas_read_html)
-    df = Loader.get_historical_data(
-        "AAPL", Source.Investopedia, base_date, )
+    monkeypatch.setattr(pd, "read_html", mock_pandas_read_html)
+    df = Loader.get_historical_data("AAPL", Source.Investopedia, base_date)
 
     assert (df.columns.sort_values() == data_source_required_columns).all()
 
+
 def test_that_local_data_source_return_right_schema_dataframe():
     base_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    test_file_path = os.path.join(base_dir, 'sample_data.csv')
+    test_file_path = os.path.join(base_dir, "sample_data.csv")
     df = Loader.get_historical_data(
-        test_file_path, Source.LocalData, base_date, TimeFrame.Weekly)
+        test_file_path, Source.LocalData, base_date, TimeFrame.Weekly
+    )
 
-    assert (df.columns.sort_values() ==
-            data_source_required_columns).all()
+    assert (df.columns.sort_values() == data_source_required_columns).all()
+
 
 def test_that_local_data_source_raise_filenotfound_error():
     with pytest.raises(FileNotFoundError):
         df = Loader.get_historical_data(
-            "unknow_file", Source.LocalData, base_date, TimeFrame.Weekly)
-
+            "unknow_file", Source.LocalData, base_date, TimeFrame.Weekly
+        )
 
 
 def test_that_we_can_load_from_stooq():
-
     df = Loader.get_historical_data("BTCUSD", Source.Stooq, base_date)
 
-    assert (df.columns.sort_values() ==
-            data_source_required_columns).all()
+    assert (df.columns.sort_values() == data_source_required_columns).all()
 
 
 def test_stooq_fail_load_apple():
     with pytest.raises(NameError):
         df = Loader.get_historical_data("AAPL", Source.Stooq, base_date)
 
+
 def test_tiingo_can_load_data():
     df = Loader.get_historical_data("AAPL", Source.Tiingo, base_date)
-    assert (df.columns.sort_values() ==
-            data_source_required_columns).all()
+    assert (df.columns.sort_values() == data_source_required_columns).all()

@@ -9,27 +9,15 @@ from marketdata import get_ohlc_for_column, split_column_to_ohlc
 
 def test_raise_error_when_col_name_in_dataframe():
     with pytest.raises(AssertionError):
-        data = [{
-            "date": dt.date.today(),
-            "col1": 1,
-            "col2": 2
-        }]
+        data = [{"date": dt.date.today(), "col1": 1, "col2": 2}]
         df = pd.DataFrame(data)
         result_df = get_ohlc_for_column(df, "fund1", "date")
 
 
 def test_split_column_when_date_is_in_index():
     data = [
-        {
-            "date": dt.date.today(),
-            "col1": 1,
-            "col2": 2
-        },
-        {
-            "date": dt.date.today() + dt.timedelta(days=1),
-            "col1": 2,
-            "col2": 4
-        }
+        {"date": dt.date.today(), "col1": 1, "col2": 2},
+        {"date": dt.date.today() + dt.timedelta(days=1), "col1": 2, "col2": 4},
     ]
     df = pd.DataFrame(data).set_index("date")
     return_df = get_ohlc_for_column(df, "col1", "date")
@@ -41,11 +29,7 @@ def test_split_column_when_date_is_in_index():
 
 def test_raise_error_when_date_col_name_in_dataframe():
     with pytest.raises(AssertionError):
-        data = [{
-            "date": dt.date.today(),
-            "col1": 1,
-            "col2": 2
-        }]
+        data = [{"date": dt.date.today(), "col1": 1, "col2": 2}]
         df = pd.DataFrame(data)
         result_df = get_ohlc_for_column(df, "col1", "timestamp")
 
@@ -62,13 +46,7 @@ def test_get_ohlc_for_column_when_dataframe_empty():
 
 
 def test_get_ohlc_for_column_when_dataframe_empty():
-    datas = [
-        {
-            "date": dt.date.today(),
-            "col1": 1,
-            "col2": 2
-        }
-    ]
+    datas = [{"date": dt.date.today(), "col1": 1, "col2": 2}]
 
     df = pd.DataFrame(data=datas)
     result_df = get_ohlc_for_column(df, "col1", "date")
@@ -97,9 +75,7 @@ def test_when_dataframe_has_zero_row_but_column_return_array_with_empty_result()
 
 
 def test_when_dataframe_has_one_row_and_column_return_one_split_array():
-    values = [{
-        "date": dt.date.today(),
-        "col1": 1}]
+    values = [{"date": dt.date.today(), "col1": 1}]
     df = pd.DataFrame(values, index=["date"])
     split_df = split_column_to_ohlc(df)
     assert 1 == len(split_df)
@@ -107,18 +83,11 @@ def test_when_dataframe_has_one_row_and_column_return_one_split_array():
     assert not split_df[0].df.empty
     assert not split_df[0].df.empty
 
+
 def test_split_dataframe_with_more_than_one_row_and_column():
     data = [
-        {
-            "date": dt.date.today(),
-            "col1": 1,
-            "col2": 2
-        },
-        {
-            "date": dt.date.today() + dt.timedelta(days=1),
-            "col1": 2,
-            "col2": 4
-        }
+        {"date": dt.date.today(), "col1": 1, "col2": 2},
+        {"date": dt.date.today() + dt.timedelta(days=1), "col1": 2, "col2": 4},
     ]
     df = pd.DataFrame(data).set_index("date")
     split_df = split_column_to_ohlc(df)
@@ -127,4 +96,3 @@ def test_split_dataframe_with_more_than_one_row_and_column():
     assert split_df[1].name == "col2"
     assert split_df[0].df.shape[0] == 2
     assert split_df[0].df.shape[1] == 6
-
