@@ -13,6 +13,12 @@ from .groups import (
     TickerInfo
 )
 
+from .split_market_data import (
+    ResultSet,
+    split_column_to_ohlc,
+    get_ohlc_for_column
+)
+
 from .main import Main
 
 __version__ = '0.1.0'
