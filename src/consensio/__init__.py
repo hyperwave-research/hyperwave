@@ -5,6 +5,4 @@ from .consensio import (
     get_rolling_mean,
 )
 
-from .main import (
-    Main
-)
+from .main import Main
