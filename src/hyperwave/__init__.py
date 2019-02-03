@@ -8,16 +8,12 @@ from .hyperwave_grouping import (
     HyperwaveGroupingPhaseAggregator,
     HyperwaveGroupingToPhase4,
     HyperwaveGrouperSmallWeek,
-    HyperwaveGrouperByMedianSlopeIncrease
+    HyperwaveGrouperByMedianSlopeIncrease,
 )
 
-from .hyperwave import (
-    Hyperwave,
-)
-
+from .hyperwave import Hyperwave
 
 
 from .main import Main
 
-__version__ = '0.1.0'
-
+__version__ = "0.1.0"

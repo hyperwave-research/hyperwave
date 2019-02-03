@@ -9,14 +9,19 @@ import pandas as pd
 
 import warnings
 
-warnings.simplefilter(action='ignore', category=SettingWithCopyWarning)
+warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
+
 
 def get_argparse():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', help="Set verbose mode")
+    parser.add_argument("-v", help="Set verbose mode")
 
-    parent_parser = argparse.ArgumentParser(description="Hyperwave finder", add_help=False)
-    parent_parser.add_argument("-v", required=False, action='count', help="Set the logging mode to verbose")
+    parent_parser = argparse.ArgumentParser(
+        description="Hyperwave finder", add_help=False
+    )
+    parent_parser.add_argument(
+        "-v", required=False, action="count", help="Set the logging mode to verbose"
+    )
 
     subparsers = parser.add_subparsers()
 
@@ -40,10 +45,10 @@ def Main():
         columns, rows = os.get_terminal_size()
     except:
         pass
-    pd.set_option('display.max_rows', 1000)
-    pd.set_option('display.max_columns', 999)
-    pd.set_option('display.width', columns)
-    pd.set_option('display.precision', 4)
+    pd.set_option("display.max_rows", 1000)
+    pd.set_option("display.max_columns", 999)
+    pd.set_option("display.width", columns)
+    pd.set_option("display.precision", 4)
 
     args.func(args)
 
