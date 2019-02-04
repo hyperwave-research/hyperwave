@@ -111,3 +111,6 @@ venv.bak/
 
 #Exclude persist result
 **/sample_data/results/*
+
+# Local Market data
+market_data
