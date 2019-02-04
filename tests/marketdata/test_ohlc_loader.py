@@ -124,6 +124,7 @@ def test_that_local_data_source_raise_filenotfound_error():
             "unknow_file", Source.LocalData, base_date, TimeFrame.Weekly
         )
 
+
 def test_that_we_can_load_from_stooq():
     df = Loader.get_historical_data("BTCUSD", Source.Stooq, base_date)
     assert (df.columns.sort_values() == data_source_required_columns).all()

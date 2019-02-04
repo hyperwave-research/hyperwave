@@ -17,9 +17,11 @@ class LocalDataLoader:
     def get_dataframe(self):
         root_path = os.getenv(ENV_HW_DATA_ROOT_FOLDER, None)
 
-        file_path = path.abspath (path.expanduser(
-            path.join(root_path, self._file_name) if root_path else self._file_name
-        ))
+        file_path = path.abspath(
+            path.expanduser(
+                path.join(root_path, self._file_name) if root_path else self._file_name
+            )
+        )
         if not path.exists(file_path):
             raise FileNotFoundError(
                 "Cannot find the data in the path {}. The root folder is {}. You can set the env variable {} for the root path".format(

@@ -34,7 +34,9 @@ class CryptoCompareLoader:
         daily_tickers = pd.DataFrame(data["Data"])
         daily_tickers["date"] = pd.to_datetime(daily_tickers["time"], unit="s")
         daily_tickers = daily_tickers.rename(columns={"volumeto": "volume"})
-        daily_tickers = daily_tickers.set_index("date").tz_localize(tz=pytz.utc, level=0)
+        daily_tickers = daily_tickers.set_index("date").tz_localize(
+            tz=pytz.utc, level=0
+        )
         daily_tickers["date"] = daily_tickers.index
         return daily_tickers
 

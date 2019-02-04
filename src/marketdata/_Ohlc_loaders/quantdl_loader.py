@@ -32,7 +32,9 @@ class QuandlLoader:
             date={"gte": "1900-01-01"},
             paginate=True,
         )
-        daily_tickers = daily_tickers.set_index("date").tz_localize(tz=pytz.utc, level=0)
+        daily_tickers = daily_tickers.set_index("date").tz_localize(
+            tz=pytz.utc, level=0
+        )
         daily_tickers["date"] = daily_tickers.index
         return daily_tickers
 

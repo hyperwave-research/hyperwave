@@ -53,9 +53,13 @@ def test_hyperwaves(source_name: str, result_file_path: str, comment: str):
         infer_datetime_format=True,
     )
 
-    if not df_result.empty :
-        df_result['x1_date'] = pd.to_datetime(df_result ['x1_date']).dt.tz_localize(pytz.UTC)
-        df_result['x2_date'] = pd.to_datetime(df_result['x2_date']).dt.tz_localize(pytz.UTC)
+    if not df_result.empty:
+        df_result["x1_date"] = pd.to_datetime(df_result["x1_date"]).dt.tz_localize(
+            pytz.UTC
+        )
+        df_result["x2_date"] = pd.to_datetime(df_result["x2_date"]).dt.tz_localize(
+            pytz.UTC
+        )
 
     if not os.path.exists(os.path.join(sample_data_folder, "results")):
         os.mkdir(os.path.join(sample_data_folder, "results"))
