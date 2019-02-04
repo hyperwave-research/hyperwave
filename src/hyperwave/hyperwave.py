@@ -1,4 +1,7 @@
+import datetime as dt
+import pytz
 from marketdata import TimeFrame, Source, Loader
+from numpy import datetime64, dtype
 
 from .hyperwave_grouping import *
 from .hyperwavepathfinder import HyperwavePathFinder
@@ -131,7 +134,14 @@ class Hyperwave:
                 df_post_max, phase["m"], phase["b"]
             )
 
-        df_hyperwave_phases = pd.DataFrame(hyperwave)
+        if len(hyperwave) > 1:
+            df_hyperwave_phases = pd.DataFrame(hyperwave)
+        else:
+            # When they are no hyperwave build the result and drop all columns
+            df_hyperwave_phases = df_hull_hyperwave
+            df_hyperwave_phases["phase_id"] = 0
+            # df_hyperwave_phases.drop(axis=0)
+
         df_hyperwave_phases = df_hyperwave_phases.drop(["index"], axis=1)
         df_hyperwave_phases = self._order_and_reset_index(df_hyperwave_phases)
         df_hyperwave_phases = df_hyperwave_phases.drop(["index"], axis=1)

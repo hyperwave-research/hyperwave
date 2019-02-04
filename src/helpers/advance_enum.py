@@ -2,8 +2,6 @@ import argparse
 from enum import Enum
 
 
-
-
 class AdvanceEnum(Enum):
     def __str__(self):
         return self.name

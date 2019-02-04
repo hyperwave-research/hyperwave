@@ -4,6 +4,7 @@ import os
 
 import pandas as pd
 import pytest
+import pytz
 from marketdata import Source, TimeFrame, Loader
 from hyperwave import Hyperwave
 
@@ -52,6 +53,10 @@ def test_hyperwaves(source_name: str, result_file_path: str, comment: str):
         infer_datetime_format=True,
     )
 
+    if not df_result.empty :
+        df_result['x1_date'] = pd.to_datetime(df_result ['x1_date']).dt.tz_localize(pytz.UTC)
+        df_result['x2_date'] = pd.to_datetime(df_result['x2_date']).dt.tz_localize(pytz.UTC)
+
     if not os.path.exists(os.path.join(sample_data_folder, "results")):
         os.mkdir(os.path.join(sample_data_folder, "results"))
     result_output_path = os.path.join(sample_data_folder, "results", result_file_name)
@@ -66,10 +71,11 @@ def test_hyperwaves(source_name: str, result_file_path: str, comment: str):
     )
 
 
-# @pytest.mark.usefixtures("set_env_variable")
+# # @pytest.mark.usefixtures("set_env_variable")
 # def test_single_hyperwave():
-#     source_name = "Stooq_BHF.US_20181122"
-#     df_source = OhlcLoader.get_historical_data(
+#     source_name = "~/git/hyperwave/tests/hyperwave/sample_data/Stooq_BHF.US_20181122.csv"
+#     result_file_path = "~/git/hyperwave/tests/hyperwave/sample_data/Stooq_BHF.US_20181122.hw.csv"
+#     df_source = Loader.get_historical_data(
 #         source_name, Source.LocalData, time_frame=TimeFrame.Weekly)
 #
 #     hw = Hyperwave.get_standard_hyperwave()
@@ -78,8 +84,22 @@ def test_hyperwaves(source_name: str, result_file_path: str, comment: str):
 #         print(df_hull_hyperwave)
 #         print(hw_phases_temp)
 #         print(hyperwave)
-#     assert 4 == hyperwave.shape[0]
-
+#
+#     df_result = pd.read_csv(
+#         result_file_path,
+#         header=0,
+#         parse_dates=["x1_date", "x2_date"],
+#         infer_datetime_format=True,
+#     )
+#
+#     # df_result['x1_date'] = pd.to_datetime(df_result ['x1_date']).dt.tz_localize(pytz.UTC)
+#     # df_result['x2_date'] = pd.to_datetime(df_result['x2_date']).dt.tz_localize(pytz.UTC)
+#
+#     df_result = df_result.sort_values("phase_id", ascending=True).reset_index()
+#     hyperwave = hyperwave.sort_values("phase_id", ascending=True).reset_index()
+#     pd.testing.assert_frame_equal(
+#         df_result, hyperwave, check_less_precise=True, check_like=True
+#     )
 #
 # def test_resave_result_to_csv():
 #     root_path = r'/home/dzucker/git/hyperwave/tests/sample_data'

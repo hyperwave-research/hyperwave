@@ -3,6 +3,7 @@ import os
 
 import pandas as pd
 import pytest
+import pytz
 from consensio import (
     get_rolling_mean,
     get_move_value,
@@ -156,9 +157,14 @@ def test_consensio(source_path: str, result_file_path: str, comment: str):
         print("Result file doesnt exist")
         return
 
-    df_result = pd.read_csv(
-        result_file_path, header=0, parse_dates=["date"], infer_datetime_format=True
+    df_result = (
+        pd.read_csv(
+            result_file_path, header=0, parse_dates=["date"], infer_datetime_format=True
+        )
+        .set_index("date")
+        .tz_localize(tz=pytz.utc, level=0)
     )
+    df_result["date"] = df_result.index
 
     df_result = (
         df_result.reset_index(drop=True)

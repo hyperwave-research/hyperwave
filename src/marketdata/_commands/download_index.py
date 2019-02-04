@@ -23,19 +23,34 @@ def func_download_index(args):
 
 
 def set_command(subparsers, parents):
-    download_parse = subparsers.add_parser("download-index",
-                                           parents=parents,
-                                           description="Download the given symbol and save the data to the output path")
+    download_parse = subparsers.add_parser(
+        "download-index",
+        parents=parents,
+        description="Download the given symbol and save the data to the output path",
+    )
 
-    download_parse.add_argument('--index', type=Groups.from_string, choices=list(Groups))
+    download_parse.add_argument(
+        "--index", type=Groups.from_string, choices=list(Groups)
+    )
 
-    download_parse.add_argument('--outputPath',
-                                type=str,
-                                help="Path to the file you want to save the Open, High, Low, Close data")
-    download_parse.add_argument('--timeframe',
-                                type=TimeFrame.from_string, choices=list(TimeFrame),
-                                default=TimeFrame.Weekly, required=False,
-                                help="Timeframe of the data. Default value Weekly")
-    download_parse.add_argument('--nbThread', type=int, default=multiprocessing.cpu_count() * 2, required=False,
-                                help="Number of parallel load. Default(1)")
+    download_parse.add_argument(
+        "--outputPath",
+        type=str,
+        help="Path to the file you want to save the Open, High, Low, Close data",
+    )
+    download_parse.add_argument(
+        "--timeframe",
+        type=TimeFrame.from_string,
+        choices=list(TimeFrame),
+        default=TimeFrame.Weekly,
+        required=False,
+        help="Timeframe of the data. Default value Weekly",
+    )
+    download_parse.add_argument(
+        "--nbThread",
+        type=int,
+        default=multiprocessing.cpu_count() * 2,
+        required=False,
+        help="Number of parallel load. Default(1)",
+    )
     download_parse.set_defaults(func=func_download_index)
