@@ -110,4 +110,4 @@ venv.bak/
 .vscode/
 
 #Exclude persist result
-tests/sample_data/results
+**/sample_data/results/*
