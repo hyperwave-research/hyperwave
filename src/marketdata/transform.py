@@ -43,3 +43,22 @@ def split_column_to_ohlc(
         if column != data_col_name
     ]
     return results
+
+
+def resample_data(df: pd.DataFrame, resample_time_frame: str = "W") -> pd.DataFrame:
+    if df.empty:
+        return df
+
+    assert "date" == df.index.name
+    assert "open" in df.columns
+    assert "high" in df.columns
+    assert "low" in df.columns
+    assert "close" in df.columns
+
+    logic = {"open": "first", "high": "max", "low": "min", "close": "last"}
+    if "volume" in df.columns:
+        logic["volume"] = "sum"
+
+    offset = pd.offsets.timedelta(days=-6)
+
+    return df.resample(resample_time_frame, loffset=offset).apply(logic).dropna()

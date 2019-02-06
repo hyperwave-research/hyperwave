@@ -1,10 +1,8 @@
-from typing import List
-
-import pandas as pd
 import datetime as dt
 
+import pandas as pd
 import pytest
-from marketdata import get_ohlc_for_column, split_column_to_ohlc
+from marketdata.transform import get_ohlc_for_column, split_column_to_ohlc
 
 
 def test_raise_error_when_col_name_in_dataframe():
