@@ -65,8 +65,8 @@ def get_path_row(
     }
 
 
-    @pytest.mark.parametrize(
-        "raw_path, expected_phases, increase_factor, test_conment",
+@pytest.mark.parametrize(
+    "raw_path, expected_phases, increase_factor, test_conment",
     [
         ([get_path_row()], [[0]], 2.0, "one row return the row if greater than zero"),
         (
