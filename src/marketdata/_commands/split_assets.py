@@ -4,12 +4,8 @@ from marketdata import split_column_to_ohlc
 
 
 def func_split_asset(args):
-    # source = args.source
-    # symbols = args.symbols.split(",")
     output_path = args.outputPath
     input_path = args.inputPath
-    # time_frame = args.timeframe
-    # nb_thread = args.nbThread
 
     print("Split Asset :")
     print("Input path : {}".format(input_path))
