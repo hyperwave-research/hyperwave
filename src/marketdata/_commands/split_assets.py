@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from marketdata import split_column_to_ohlc
+from marketdata.transform import split_column_to_ohlc
 
 
 def func_split_asset(args):
