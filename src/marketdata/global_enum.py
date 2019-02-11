@@ -12,3 +12,4 @@ class Source(AdvanceEnum):
 class TimeFrame(AdvanceEnum):
     Daily = 1
     Weekly = 2
+    Monthly = 3
