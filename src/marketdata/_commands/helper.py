@@ -15,7 +15,7 @@ def task_fetch_symbol(
         data = Loader.get_historical_data(symbol, source, time_frame=timeframe)
         data.to_csv(
             output_path,
-            columns=["date", "close", "high", "low", "open"],
+            columns=["date", "close", "high", "low", "open", "volume"],
             index=False,
             header=True,
         )
@@ -32,7 +32,6 @@ def fetch_symbols(
     nb_thread: int,
 ):
     event_loop = asyncio.new_event_loop()
-    # asyncio.set_event_loop( event_loop )
     p = ThreadPoolExecutor(nb_thread)
 
     async def load_data():
