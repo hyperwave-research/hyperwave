@@ -108,3 +108,51 @@ def test_marketdata_split_assets(monkeypatch, tmpdir):
 
     for output_path in expected_output_paths:
         assert os.path.exists(output_path)
+
+
+def test_resample_market_data_from_daily_to_weekly(monkeypatch, tmpdir):
+    # prepare the sample input file
+    input_path = os.path.join(tmpdir.dirname, "input")
+    os.mkdir(input_path)
+
+    output_path = os.path.join(tmpdir.dirname, "output")
+    os.mkdir(output_path)
+
+    file_names = []
+    for file_id in range(1, 4):
+        file_name = "market_{}.csv".format(file_id)
+        file_names.append(file_name)
+        file_path = os.path.join(input_path, file_name )
+        with open(file_path, mode="w") as f:
+            f.write("date,open,high,low,close\n")
+            for row_id in range(0, 4):
+                f.write(
+                    "{},{},{},{},{}\n".format(
+                        dt.date.today() + dt.timedelta(days=row_id),
+                        1 * row_id,
+                        2 * row_id,
+                        0.5 * row_id,
+                        2 * row_id,
+                    )
+                )
+            f.flush()
+
+    arg_sample = [
+        "main.py",
+        "resample",
+        "--inputPath",
+        input_path,
+        "--outputPath",
+        output_path,
+    ]
+
+    monkeypatch.setattr(sys, "argv", arg_sample)
+    Main()
+
+    expected_output_paths = [
+        os.path.join(output_path, file_name)
+        for file_name in file_names
+    ]
+
+    for output_path in expected_output_paths:
+        assert os.path.exists(output_path)

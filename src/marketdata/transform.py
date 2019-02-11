@@ -31,7 +31,7 @@ def get_ohlc_for_column(
     result_df["close"] = result_df[["open"]]
     result_df["volume"] = 0
 
-    return result_df
+    return result_df.dropna()
 
 
 def split_column_to_ohlc(
@@ -61,4 +61,5 @@ def resample_data(df: pd.DataFrame, resample_time_frame: str = "W") -> pd.DataFr
 
     offset = pd.offsets.timedelta(days=-6)
 
-    return df.resample(resample_time_frame, loffset=offset).apply(logic).dropna()
+    result_df = df.resample(resample_time_frame, loffset=offset, ).apply(logic).dropna()
+    return result_df

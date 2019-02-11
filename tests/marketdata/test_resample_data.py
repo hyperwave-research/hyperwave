@@ -3,7 +3,7 @@ from typing import List, Dict
 
 import pandas as pd
 import pytest
-from marketdata import resample_data
+from marketdata.transform import resample_data
 
 
 def test_resample_empty_dataframe_return_empty_data_frame():
