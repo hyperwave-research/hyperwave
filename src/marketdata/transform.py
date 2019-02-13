@@ -61,5 +61,5 @@ def resample_data(df: pd.DataFrame, resample_time_frame: str = "W") -> pd.DataFr
 
     offset = pd.offsets.timedelta(days=-6)
 
-    result_df = df.resample(resample_time_frame, loffset=offset, ).apply(logic).dropna()
+    result_df = df.resample(resample_time_frame, loffset=offset).apply(logic).dropna()
     return result_df
