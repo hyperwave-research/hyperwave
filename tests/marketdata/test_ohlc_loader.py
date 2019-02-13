@@ -7,7 +7,7 @@ import pytest
 import pytz
 from marketdata import Loader, Source, TimeFrame
 
-base_date = datetime(1900, 1, 1, tzinfo=pytz.utc)
+base_date = datetime(1900, 1, 1)
 
 INVESTOPIA_SAMPLE_DATA = """
     <html>

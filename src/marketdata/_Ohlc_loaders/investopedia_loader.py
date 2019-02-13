@@ -21,7 +21,7 @@ class InvestopediaLoader:
         )
         df = df.reset_index(drop=True)
         df = df.drop("Date", axis=1)
-        df = df.set_index("date").tz_localize(tz=pytz.utc, level=0)
+        df = df.set_index("date")
         df["date"] = df.index
         return df
 

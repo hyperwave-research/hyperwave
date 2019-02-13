@@ -48,7 +48,7 @@ class Loader:
     def get_historical_data(
         symbol: str,
         source: Source,
-        base_date: dt.datetime = dt.datetime(1789, 1, 5, tzinfo=pytz.UTC),
+        base_date: dt.datetime = dt.datetime(1789, 1, 5),
         time_frame: TimeFrame = TimeFrame.Weekly,
     ):
         source_class = _sources_map[source](symbol, time_frame)

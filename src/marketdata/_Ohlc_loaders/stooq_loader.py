@@ -35,6 +35,6 @@ class StooqLoader:
             columns={column: column.lower() for column in raw_data.columns}
         )
         df.loc[:, "date"] = pd.to_datetime(df.loc[:, "date"])
-        df = df.set_index("date").tz_localize(tz=pytz.utc, level=0)
+        df = df.set_index("date")
         df["date"] = df.index
         return df

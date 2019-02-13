@@ -122,7 +122,7 @@ def test_resample_market_data_from_daily_to_weekly(monkeypatch, tmpdir):
     for file_id in range(1, 4):
         file_name = "market_{}.csv".format(file_id)
         file_names.append(file_name)
-        file_path = os.path.join(input_path, file_name )
+        file_path = os.path.join(input_path, file_name)
         with open(file_path, mode="w") as f:
             f.write("date,open,high,low,close\n")
             for row_id in range(0, 4):
@@ -150,8 +150,7 @@ def test_resample_market_data_from_daily_to_weekly(monkeypatch, tmpdir):
     Main()
 
     expected_output_paths = [
-        os.path.join(output_path, file_name)
-        for file_name in file_names
+        os.path.join(output_path, file_name) for file_name in file_names
     ]
 
     for output_path in expected_output_paths:

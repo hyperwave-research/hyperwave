@@ -53,7 +53,7 @@ class TiingoLoader:
             }
         )
 
-        df.loc[:, "date"] = pd.to_datetime(df.loc[:, "date"])
+        df.loc[:, "date"] = pd.to_datetime(df.loc[:, "date"]).dt.tz_localize(None)
         df = df.set_index("date")
         df["date"] = df.index
         return df
