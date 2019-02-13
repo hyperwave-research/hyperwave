@@ -23,7 +23,7 @@ def func_resample(args):
         for file in files:
             full_path = os.path.join(input_path, file)
             df = Loader.get_historical_data(
-                full_path, Source.LocalData  , time_frame=TimeFrame.Daily
+                full_path, Source.LocalData, time_frame=TimeFrame.Daily
             )
             df = df.set_index("date")
             result_df = resample_data(df, resample_time)
