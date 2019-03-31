@@ -19,10 +19,10 @@ def task_fetch_symbol(
             index=False,
             header=True,
         )
-    except:
-        return (False, symbol)
+    except Exception as e:
+        return (e, symbol)
 
-    return (True, symbol)
+    return (None, symbol)
 
 
 def fetch_symbols(
@@ -52,11 +52,12 @@ def fetch_symbols(
                     futures, return_when=asyncio.FIRST_COMPLETED
                 )
                 for f in done:
-                    no_error, symbol = await f
-                    if no_error:
-                        pbar.set_description("done %s" % symbol)
-                    else:
+                    error, symbol = await f
+                    if error:
                         pbar.set_description("Error %s" % symbol)
+                        pbar.write(str(error))
+                    else:
+                        pbar.set_description("done %s" % symbol)
                     pbar.update(1)
 
     try:
